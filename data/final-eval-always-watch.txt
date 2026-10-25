@@ -1,0 +1,38 @@
+Policy: always-watch   split: test   episodes: 302   ticks: 13038
+
+  Brier score (mean per episode, 0 best, 2 worst)  0.797
+  Log-loss (mean per episode)                      1.493
+  Cost per tick (mean of per-episode cost/ticks)   44.86
+  Total cost (raw sum over all ticks)              603180
+  Mean lead time vs critical time (min)            -   (0/88 cascades reached ALERT+)
+  False-alarm rate (benign episodes with ALERT+)   0.0%   (0/158)
+  Flip-flops                                       0 total, 0.00 per episode
+  Twin: pre-split overconfidence (0 = base rates)  0.000
+  Twin: time-to-commit after split (p>=0.6, min)  cascade - (never: 30), benign - (never: 30)
+  Fallback ticks                                   0
+  DEGRADED ticks                                   0   (0 episodes)
+  Forecast accuracy (cascades: real event in window) -   (0 distinct forecast lines; stricter "stage started in window": -)
+
+group                        n     truth  Brier LogLoss Cost/tick  ALERT+ Lead(min) Flips
+cascade                     40      CASC  1.175   2.303    152.74    0.0%         -     0
+cutout:cameras              12 NOISE/CASC/ISO  0.942   1.730     60.21    0.0%         -     0
+cutout:gateway               8  ISO/CASC  1.100   2.043     89.63    0.0%         -     0
+drifting                     6 CASC/NOISE  0.725   1.450     72.68    0.0%         -     0
+duplicate_storm              5       ISO  0.975   1.609      1.00    0.0%         -     0
+isolated_incident           40       ISO  0.975   1.609      1.00    0.0%         -     0
+lookalike:flu_cluster        9     NOISE  0.275   0.598      0.00    0.0%         -     0
+lookalike:gateway_outage     9      SENS  1.075   1.897      0.00    0.0%         -     0
+lookalike:rain_only         12     NOISE  0.275   0.598      0.00    0.0%         -     0
+lookalike:storm_calls       10     NOISE  0.275   0.598      0.00    0.0%         -     0
+noise                       40     NOISE  0.275   0.598      0.00    0.0%         -     0
+rumor_wave:pure              3     NOISE  0.275   0.598      0.00    0.0%         -     0
+rumor_wave:with_real         3       ISO  0.975   1.609      1.00    0.0%         -     0
+sensor_failure:lie          20      SENS  1.075   1.897      0.00    0.0%         -     0
+sensor_failure:outage       20      SENS  1.075   1.897      0.00    0.0%         -     0
+surge                        5      CASC  1.175   2.303    153.01    0.0%         -     0
+twin:benign                 30     NOISE  0.275   0.598      0.00    0.0%         -     0
+twin:cascade                30      CASC  1.175   2.303    158.28    0.0%         -     0
+
+ALERT+ = share of episodes where the policy ever reached ALERT or ESCALATE (a false alarm when truth is NOISE/SENS).
+
+saved data/eval-results.json

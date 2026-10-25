@@ -1,0 +1,46 @@
+Policy: engine   split: prior-shift   episodes: 100   ticks: 4247
+
+  Brier score (mean per episode, 0 best, 2 worst)  0.397
+  Log-loss (mean per episode)                      0.726
+  Cost per tick (mean of per-episode cost/ticks)   1.86
+  Total cost (raw sum over all ticks)              8151
+  Mean lead time vs critical time (min)            -5.33   (16/16 cascades reached ALERT+)
+  False-alarm rate (benign episodes with ALERT+)   3.0%   (2/66)
+  Flip-flops                                       91 total, 0.91 per episode
+  Twin: pre-split overconfidence (0 = base rates)  -
+  Twin: time-to-commit after split (p>=0.6, min)  cascade - (never: 0), benign - (never: 0)
+  Fallback ticks                                   0
+  DEGRADED ticks                                   0   (0 episodes)
+  Forecast accuracy (cascades: real event in window) 73.8%   (141 distinct forecast lines; stricter "stage started in window": 74.5%)
+
+group                        n     truth  Brier LogLoss Cost/tick  ALERT+ Lead(min) Flips
+cascade                     16      CASC  0.446   0.812      6.72  100.0%     -5.33     0
+isolated_incident           18       ISO  1.004   1.555      1.79    5.6%         -    19
+lookalike:flu_cluster        2     NOISE  0.053   0.180      0.36    0.0%         -     2
+lookalike:rain_only         10     NOISE  0.131   0.337      1.06   10.0%         -     5
+lookalike:storm_calls        5     NOISE  0.341   0.617      1.20   20.0%         -     5
+noise                       36     NOISE  0.173   0.409      0.65    0.0%         -    42
+sensor_failure:lie           4      SENS  0.360   0.747      0.52    0.0%         -     9
+sensor_failure:outage        9      SENS  0.407   0.785      0.41    0.0%         -     9
+
+ALERT+ = share of episodes where the policy ever reached ALERT or ESCALATE (a false alarm when truth is NOISE/SENS).
+
+Prior-shift sequence: episodes 1-50 normal regime, 51-100 monsoon
+policy               Brier 1-50 Brier 51-100 Cost 1-50 Cost 51-100  FA 1-50 FA 51-100
+engine                    0.392        0.401      1.39        2.33     2.8%      3.3%
+engine-static-prior       0.373        0.397      1.48        2.35     2.8%      0.0%
+count-threshold           0.609        0.591      2.87        4.67    13.9%     36.7%
+
+true cascade share: episodes 1-50 8.0%, 51-100 24.0%
+learned prior the engine STARTED each episode with:
+  episode   1: N 0.550  S 0.150  I 0.200  C 0.100   (truth NOISE)
+  episode  25: N 0.622  S 0.112  I 0.209  C 0.056   (truth ISOLATED_INCIDENT)
+  episode  50: N 0.572  S 0.137  I 0.180  C 0.111   (truth NOISE)
+  episode  55: N 0.574  S 0.106  I 0.184  C 0.136   (truth NOISE)
+  episode  60: N 0.625  S 0.082  I 0.188  C 0.105   (truth NOISE)
+  episode  65: N 0.615  S 0.063  I 0.145  C 0.176   (truth CASCADING_CRISIS)
+  episode  75: N 0.570  S 0.038  I 0.173  C 0.220   (truth CASCADING_CRISIS)
+  episode 100: N 0.428  S 0.160  I 0.205  C 0.207   (truth NOISE)
+CUSUM alarms at episode(s): none
+
+saved data/eval-results.json

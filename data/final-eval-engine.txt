@@ -1,0 +1,76 @@
+Policy: engine   split: test   episodes: 302   ticks: 13038
+
+  Brier score (mean per episode, 0 best, 2 worst)  0.414
+  Log-loss (mean per episode)                      0.747
+  Cost per tick (mean of per-episode cost/ticks)   2.62
+  Total cost (raw sum over all ticks)              34836
+  Mean lead time vs critical time (min)            -6.17   (88/88 cascades reached ALERT+)
+  False-alarm rate (benign episodes with ALERT+)   2.5%   (4/158)
+  Flip-flops                                       240 total, 0.79 per episode
+  Twin: pre-split overconfidence (0 = base rates)  0.021
+  Twin: time-to-commit after split (p>=0.6, min)  cascade 9.67 (never: 0), benign 1.17 (never: 0)
+  Fallback ticks                                   0
+  DEGRADED ticks                                   0   (0 episodes)
+  Forecast accuracy (cascades: real event in window) 80.0%   (855 distinct forecast lines; stricter "stage started in window": 69.1%)
+
+group                        n     truth  Brier LogLoss Cost/tick  ALERT+ Lead(min) Flips
+cascade                     40      CASC  0.474   0.892      6.82  100.0%     -6.30     2
+cutout:cameras              12 NOISE/CASC/ISO  0.513   0.909      3.56   58.3%     -3.93     9
+cutout:gateway               8  ISO/CASC  0.641   1.169      4.99   62.5%     -5.90     2
+drifting                     6 CASC/NOISE  0.338   0.699      3.91   50.0%     -7.58     3
+duplicate_storm              5       ISO  0.690   1.068      1.80    0.0%         -     5
+isolated_incident           40       ISO  0.855   1.270      1.74   12.5%         -    51
+lookalike:flu_cluster        9     NOISE  0.098   0.269      0.51    0.0%         -     9
+lookalike:gateway_outage     9      SENS  0.461   0.852      0.41    0.0%         -    10
+lookalike:rain_only         12     NOISE  0.183   0.407      1.48   25.0%         -    11
+lookalike:storm_calls       10     NOISE  0.500   0.763      0.65    0.0%         -    13
+noise                       40     NOISE  0.157   0.392      0.56    0.0%         -    37
+rumor_wave:pure              3     NOISE  0.190   0.438      0.68    0.0%         -     3
+rumor_wave:with_real         3       ISO  0.692   1.071      1.67    0.0%         -     4
+sensor_failure:lie          20      SENS  0.327   0.613      0.31    0.0%         -    29
+sensor_failure:outage       20      SENS  0.363   0.711      0.41    0.0%         -    24
+surge                        5      CASC  0.453   0.844      6.47  100.0%     -5.37     0
+twin:benign                 30     NOISE  0.115   0.312      0.83    3.3%         -    28
+twin:cascade                30      CASC  0.477   0.878      6.67  100.0%     -6.40     0
+
+ALERT+ = share of episodes where the policy ever reached ALERT or ESCALATE (a false alarm when truth is NOISE/SENS).
+
+Policy comparison, split test
+policy            Brier LogLoss Cost/tick FalseAlarm Lead(min) Flips Fallback Forecast
+always-watch      0.797   1.493     44.86       0.0%         -     0        0        -
+count-threshold   0.724   1.324      7.73      34.8%     -3.88   589        0        -
+engine-handset    0.427   0.767      2.63       2.5%     -6.40   244        0    80.0%
+engine            0.414   0.747      2.62       2.5%     -6.17   240        0    80.0%
+
+engine vs count-threshold: Brier -0.310 (engine better), false-alarm rate -32.3 pts (engine better), cost/tick -5.11 (engine better)  -> engine wins 3/3
+engine-handset vs count-threshold: Brier -0.296 (engine-handset better), false-alarm rate -32.3 pts (engine-handset better), cost/tick -5.10 (engine-handset better)  -> engine-handset wins 3/3
+engine vs engine-handset: Brier -0.014 (engine better), false-alarm rate +0.0 pts (tie), cost/tick -0.01 (engine better)  -> engine wins 2/3
+
+Trust panel (177 sources ever seen)
+top 5:
+  gw0            gateway          trust 0.999   Beta(3.5, 0.0)
+  gw1            gateway          trust 0.996   Beta(2.2, 0.0)
+  gw2            gateway          trust 0.995   Beta(0.7, 0.0)
+  dsp-z04-2      dispatch         trust 0.991   Beta(28.7, 0.3)
+  gw3            gateway          trust 0.987   Beta(0.5, 0.0)
+bottom 5:
+  trf-z02-3      traffic_sensor   trust 0.217   Beta(0.3, 1.0)
+  trf-z01-3      traffic_sensor   trust 0.120   Beta(0.1, 0.5)
+  trf-z00-3      traffic_sensor   trust 0.065   Beta(0.3, 4.2)
+  trf-z03-3      traffic_sensor   trust 0.062   Beta(0.1, 1.3)
+  trf-z04-3      traffic_sensor   trust 0.032   Beta(0.0, 0.2)
+mean trust by source type:
+  gateway          0.991   (5 sources, min 0.980, max 0.999)
+  hospital         0.919   (10 sources, min 0.842, max 0.971)
+  dispatch         0.906   (24 sources, min 0.754, max 0.991)
+  rain_gauge       0.818   (10 sources, min 0.739, max 0.932)
+  citizen_report   0.710   (30 sources, min 0.386, max 0.908)
+  drainage_sensor  0.617   (30 sources, min 0.354, max 0.811)
+  utility          0.615   (20 sources, min 0.469, max 0.828)
+  camera           0.589   (20 sources, min 0.310, max 0.839)
+  traffic_sensor   0.472   (28 sources, min 0.032, max 0.720)
+
+learned prior after all 302 episodes: N 0.550  S 0.150  I 0.200  C 0.100
+CUSUM alarms at episode(s): none
+
+saved data/eval-results.json

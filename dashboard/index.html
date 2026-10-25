@@ -1,0 +1,149 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>The First 10 Minutes</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <!-- Top bar: scenario, speed, play controls, clock, mode -->
+  <header class="topbar">
+    <h1>The First 10 Minutes</h1>
+    <div class="group">
+      <span class="lbl">Scenario</span>
+      <select id="scenario" aria-label="Scenario"></select>
+    </div>
+    <div class="group" id="speeds">
+      <span class="lbl">Speed</span>
+      <button data-speed="1">1×</button>
+      <button data-speed="2">2×</button>
+      <button data-speed="4" class="on">4×</button>
+    </div>
+    <div class="group">
+      <button id="play" title="Space">▶ Play</button>
+      <button id="pause" title="Space">⏸ Pause</button>
+      <button id="step" title="→ (when paused)">⏭ Step</button>
+      <button id="reset" title="R">⟲ Reset</button>
+    </div>
+    <span id="clock" class="num">00:00</span>
+    <div class="spacer"></div>
+    <div class="group" id="modes">
+      <button data-mode="single" class="on">Single</button>
+      <button data-mode="twin">Twin</button>
+      <button data-mode="shift">Prior-Shift</button>
+      <button data-mode="eval">Eval</button>
+    </div>
+    <button id="theme" title="Toggle light / dark">Light / Dark</button>
+  </header>
+
+  <main>
+    <p id="scenario-desc"></p>
+
+    <!-- ===== Single mode ===== -->
+    <section id="view-single">
+      <div class="cols">
+        <div>
+          <div class="row-top">
+            <div class="card"><h2>Belief now</h2><div class="bars" id="s-bars"></div></div>
+            <div class="card action-box">
+              <h2>Recommended action</h2>
+              <span class="badge" id="s-badge">—</span>
+              <div class="ecost">Expected cost: <span class="num" id="s-cost">—</span></div>
+            </div>
+          </div>
+          <div class="card">
+            <h2>Belief timeline</h2>
+            <div class="canvas-wrap"><canvas id="s-timeline" height="240"></canvas><div class="tip hidden" id="s-tip"></div></div>
+            <div class="legend" id="s-legend"></div>
+          </div>
+          <div class="card"><h2>Forecast: next stages</h2><div id="s-forecast" class="muted">No forecast yet.</div></div>
+          <div class="card reveal hidden" id="s-reveal"></div>
+        </div>
+        <div>
+          <div class="card">
+            <h2>Why it changed</h2>
+            <div id="s-why" class="muted">Press Play.</div>
+          </div>
+          <div class="card">
+            <h2>Event feed <span class="muted" id="s-feedcount"></span></h2>
+            <div class="feed" id="s-feed"></div>
+          </div>
+          <details class="card" id="trust-card">
+            <summary><b>Source trust</b> <span class="muted" id="trust-sum"></span></summary>
+            <table class="trust-grid" id="trust-grid"></table>
+            <div id="trust-detail" class="muted">Click a source type to see its trust over this episode.</div>
+          </details>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== Twin mode ===== -->
+    <section id="view-twin" class="hidden">
+      <div class="card" id="t-identity">Twin test: both episodes share the same events up to the SPLIT line.</div>
+      <div class="twin-cols">
+        <div class="card twin same" id="t-left">
+          <span class="state" id="t-left-state">Identical prefix</span>
+          <h2>Twin A</h2>
+          <div class="row-top">
+            <div class="bars" id="t-left-bars"></div>
+            <div class="action-box"><span class="badge small" id="t-left-badge">—</span><div class="ecost">Expected cost: <span class="num" id="t-left-cost">—</span></div></div>
+          </div>
+          <div class="canvas-wrap"><canvas id="t-left-timeline" height="190"></canvas><div class="tip hidden" id="t-left-tip"></div></div>
+        </div>
+        <div class="card twin same" id="t-right">
+          <span class="state" id="t-right-state">Identical prefix</span>
+          <h2>Twin B</h2>
+          <div class="row-top">
+            <div class="bars" id="t-right-bars"></div>
+            <div class="action-box"><span class="badge small" id="t-right-badge">—</span><div class="ecost">Expected cost: <span class="num" id="t-right-cost">—</span></div></div>
+          </div>
+          <div class="canvas-wrap"><canvas id="t-right-timeline" height="190"></canvas><div class="tip hidden" id="t-right-tip"></div></div>
+        </div>
+      </div>
+      <div class="card"><h2>Divergence</h2><div id="t-callout" class="muted">Waiting for the split…</div></div>
+      <div class="card reveal hidden" id="t-reveal"></div>
+      <div class="card"><h2>Event feed (shared) <span class="muted" id="t-feedcount"></span></h2><div class="feed" id="t-feed"></div></div>
+    </section>
+
+    <!-- ===== Prior-shift mode ===== -->
+    <section id="view-shift" class="hidden">
+      <div class="card">
+        <h2>Learned prior over 100 episodes</h2>
+        <div class="canvas-wrap"><canvas id="p-chart" height="280"></canvas><div class="tip hidden" id="p-tip"></div></div>
+        <div class="legend">
+          <span><i style="background:var(--cascade)"></i>P(cascade) prior the engine starts each episode with</span>
+          <span><i style="background:var(--text)"></i>running Brier, adaptive prior (resets at 50)</span>
+          <span><i style="background:var(--muted)"></i>running Brier, static prior (dashed)</span>
+        </div>
+        <div class="dots" id="p-dots"></div>
+        <div class="legend">Dots: true hypothesis of each episode.
+          <span><i style="background:var(--noise)"></i>noise</span><span><i style="background:var(--sensor)"></i>sensor failure</span>
+          <span><i style="background:var(--isolated)"></i>isolated</span><span><i style="background:var(--cascade)"></i>cascade</span>
+        </div>
+        <div id="p-cusum" class="note"></div>
+      </div>
+      <div class="card"><h2>Episodes 1-50 vs 51-100</h2><div class="stats" id="p-stats"></div><div id="p-verdict" class="note"></div></div>
+    </section>
+
+    <!-- ===== Eval mode ===== -->
+    <section id="view-eval" class="hidden">
+      <div class="card">
+        <h2>Policy comparison <select id="eval-split"><option value="test">test split</option><option value="dev">dev split</option><option value="prior-shift">prior-shift</option></select></h2>
+        <div class="scroll-x" id="eval-table">Loading…</div>
+        <div class="limit" id="eval-limit"></div>
+      </div>
+      <div class="card"><h2>Breakdown by episode type</h2><div class="breakdown" id="eval-breakdown"></div></div>
+    </section>
+
+    <p class="help">Keys: Space play/pause · → next tick (paused) · R reset · 1 / 2 / 4 speed. Hover the timeline for exact numbers; click an event to see its contribution.</p>
+  </main>
+
+  <div class="banners">
+    <div class="banner degraded hidden" id="b-degraded"></div>
+    <div class="banner fallback hidden" id="b-fallback">FALLBACK — engine error, using baseline</div>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>

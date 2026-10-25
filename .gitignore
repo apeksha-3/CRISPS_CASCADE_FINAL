@@ -1,0 +1,9 @@
+node_modules/
+dist/
+.env
+# Built episodes and eval caches (rebuild with `npm run sim -- --build`)...
+data/*
+# ...except the Phase 6 final eval captures, committed so judges can read exact numbers.
+!data/final-eval-*.txt
+# Offline demo recording (docs/demo-backup.md): too large for the repo
+docs/demo-recording.mp4

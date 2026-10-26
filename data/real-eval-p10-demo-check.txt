@@ -1,0 +1,8 @@
+PASS  Twin Test                    split 09:00: pre-split max |dP| 0.0e+0 (must be < 1e-9); max |dP| within 5 min after 0.639 (must be > 0.1), first > 0.1 at 13:00
+PASS  Gateway Outage + Rumor Wave  highest action PREPARE (must be <= PREPARE)
+PASS  Cutout                       DEGRADED on 17 ticks (15:00-31:00); lowest trust-weighted coverage 75%, threshold 80% (demo-only threshold; engine default 50%); highest action ESCALATE
+PASS  Real Cascade                 highest action ESCALATE; first ALERT+ at 14:00
+PASS  Rain Only (Lookalike)        highest action PREPARE (must be <= PREPARE)
+PASS  Rumor Wave                   highest action PREPARE (must be <= PREPARE)
+
+all 6 demo scenarios pass

@@ -1,0 +1,97 @@
+/* dashboard/user.css: the user-facing layers (simple view), the mode and view switches, tooltips, mobile width. */
+
+#top { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; padding: 10px 14px; background: var(--panel); border-bottom: 1px solid var(--line); }
+#top h1 { font-size: 17px; margin: 0; }
+#top .group { display: flex; gap: 4px; }
+#top .spacer { flex: 1; }
+.hidden { display: none !important; }
+.small { font-size: 12px; }
+.sr { position: absolute; left: -9999px; }
+
+/* what is visible in which mode and view */
+body[data-view="technical"] #simple-root { display: none; }
+body[data-view="simple"] #tech-root, body[data-view="simple"] #nowcast-tech { display: none; }
+body[data-view="technical"][data-mode="nowcast"] #tech-root { display: none; }
+body[data-view="technical"][data-mode="rules"] #nowcast-tech, body[data-view="technical"][data-mode="rules"] #u-controls { display: none; }
+
+.controls { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; padding: 10px 14px; }
+.controls select { max-width: 100%; }
+.controls .scrub { flex: 1 1 180px; min-width: 140px; }
+.controls input[type=range] { width: 100%; }
+.speeds { display: inline-flex; gap: 4px; }
+#simple-root, #nowcast-tech { max-width: 980px; margin: 0 auto; padding: 0 14px 24px; }
+#u-desc { margin: 4px 0 10px; }
+
+.notice { background: var(--panel-2); border: 1px solid var(--accent); border-radius: 8px; padding: 10px 12px; margin-bottom: 10px; line-height: 1.5; }
+.card { background: var(--panel); border: 1px solid var(--line); border-radius: 10px; padding: 14px; margin-bottom: 12px; }
+.card h2 { font-size: 13px; text-transform: uppercase; letter-spacing: .04em; color: var(--muted); margin: 0 0 8px; }
+
+/* Layer 1 */
+.layer1 { text-align: left; }
+.status { display: inline-block; border-radius: 12px; padding: 14px 22px; margin-bottom: 8px; background: var(--watch); color: #111; }
+.status span { font-size: 30px; font-weight: 700; line-height: 1.2; }
+.status.l-WATCH, .status.l-Low { background: #4ade80; color: #10230f; }
+.status.l-PREPARE { background: #3b82f6; color: #fff; }
+.status.l-ALERT, .status.l-Elevated { background: #f59e0b; color: #1d1403; }
+.status.l-ESCALATE, .status.l-High { background: #ef4444; color: #fff; }
+.status.l-none { background: var(--watch); color: #111; }
+.layer1 .line { margin: 0 0 4px; font-size: 18px; font-weight: 600; }
+.layer1 .sentence { margin: 0 0 14px; font-size: 17px; line-height: 1.5; }
+.conf { display: flex; align-items: center; gap: 10px; }
+.conf .lbl { color: var(--muted); font-size: 13px; }
+.confbar { flex: 0 1 260px; width: 260px; height: 14px; background: var(--panel-2); border: 1px solid var(--line); border-radius: 8px; overflow: hidden; }
+.confbar i { display: block; height: 100%; width: 0; background: var(--accent); transition: width .25s; }
+.confbar i.low { background: #f59e0b; }
+.confbar i.none { background: var(--watch); }
+.todo { margin-top: 14px; padding: 10px 12px; border-left: 5px solid var(--accent); background: var(--panel-2); border-radius: 6px; font-size: 16px; }
+.more { margin: 2px 0 12px; }
+
+/* Layer 2 */
+.zgrid { display: grid; grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); gap: 8px; }
+.zt { border: 2px solid transparent; border-radius: 8px; padding: 8px 10px; background: var(--panel-2); min-height: 62px; }
+.zt b { display: block; font-size: 13px; }
+.zt span { font-size: 12px; color: var(--muted); }
+.zt.s0 { background: var(--panel-2); }
+.zt.s1 { background: #5b5a2a; color: #fff; } .zt.s1 span { color: #eee; }
+.zt.s2 { background: #a86a10; color: #fff; } .zt.s2 span { color: #fff; }
+.zt.s3 { background: #b42323; color: #fff; } .zt.s3 span { color: #fff; }
+:root[data-theme="light"] .zt.s1 { background: #f6e58a; color: #231f00; } :root[data-theme="light"] .zt.s1 span { color: #3a3300; }
+:root[data-theme="light"] .zt.s2 { background: #f4ad42; color: #231500; } :root[data-theme="light"] .zt.s2 span { color: #3a2300; }
+:root[data-theme="light"] .zt.s3 { background: #e25b5b; color: #fff; }
+.zt.expected { border-color: var(--accent); border-style: dashed; }
+.zt.target.s0 { background: var(--panel-2); }
+.card.two { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+.card.two p { margin: 0; line-height: 1.5; }
+.card.rumor { border-color: #f59e0b; }
+.alog { margin: 0; padding-left: 18px; list-style: disc; max-height: 180px; overflow: auto; }
+.alog li { margin: 2px 0; }
+#u-threat { width: 100%; display: block; }
+
+/* tooltips: one plain line, on hover or keyboard focus */
+[data-tip] { position: relative; cursor: help; }
+[data-tip]:hover::after, [data-tip]:focus::after { content: attr(data-tip); position: absolute; z-index: 20; left: 0; top: calc(100% + 6px); width: max-content; max-width: 280px; white-space: normal; background: #111; color: #fff; font-size: 12px; font-weight: 400; line-height: 1.35; padding: 6px 9px; border-radius: 6px; box-shadow: 0 2px 10px #0006; pointer-events: none; text-transform: none; letter-spacing: 0; text-align: left; }
+#nowcast-tech table { border-collapse: collapse; width: 100%; font-size: 13px; }
+#nowcast-tech th, #nowcast-tech td { border-bottom: 1px solid var(--line); padding: 4px 8px; text-align: left; }
+#nowcast-tech .scroll { overflow-x: auto; }
+
+/* mobile width: Layer 1 first, everything in one column, big touch targets */
+@media (max-width: 640px) {
+  #top { padding: 8px 10px; gap: 8px; }
+  #top h1 { font-size: 15px; width: 100%; }
+  #top .group button { padding: 8px 10px; }
+  .controls { padding: 8px 10px; }
+  .controls button, .controls select { padding: 8px 10px; }
+  #simple-root, #nowcast-tech { padding: 0 10px 24px; }
+  .status { display: block; text-align: center; padding: 16px 10px; }
+  .status span { font-size: 26px; }
+  .layer1 .line { font-size: 16px; }
+  .layer1 .sentence { font-size: 16px; }
+  .conf { flex-wrap: wrap; }
+  .confbar { flex: 1 1 100%; width: 100%; }
+  .card.two { grid-template-columns: 1fr; }
+  .zgrid { grid-template-columns: repeat(2, 1fr); }
+  [data-tip]:hover::after, [data-tip]:focus::after { max-width: 220px; }
+}
+#tech-root .topbar { position: static; } /* the new top bar sits above it; two sticky bars would overlap */
+/* the tooltips of buttons at the right edge open leftwards so they never widen the page */
+#view-switch [data-tip]:hover::after, #theme2:hover::after { left: auto; right: 0; }

@@ -5,8 +5,71 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>The First 10 Minutes</title>
   <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="user.css">
 </head>
-<body>
+<body data-mode="rules" data-view="simple">
+  <!-- ===== Always visible: mode, view, theme ===== -->
+  <div id="top">
+    <h1>The First 10 Minutes</h1>
+    <div class="group" id="mode-switch" role="group" aria-label="Mode">
+      <button data-m="rules" class="on" data-tip="The rules engine runs on simulated crises: it weighs four explanations and recommends an action.">Rules engine (simulator)</button>
+      <button data-m="nowcast" data-tip="A model trained on real New York rain events estimates the chance of road slowdowns and flood-report surges in the next hour.">ML nowcast (real NYC)</button>
+    </div>
+    <div class="spacer"></div>
+    <div class="group" id="view-switch" role="group" aria-label="View">
+      <button data-v="simple" class="on">Simple</button>
+      <button data-v="technical" data-tip="The full engineering dashboard: probabilities, evidence, metrics.">Technical</button>
+    </div>
+    <button id="theme2" title="Toggle light / dark">Light / Dark</button>
+  </div>
+
+  <!-- ===== Controls shared by the simple view and the nowcast technical view ===== -->
+  <div id="u-controls" class="controls">
+    <select id="u-pick" aria-label="Scenario or event"></select>
+    <button id="u-play">▶ Play</button>
+    <button id="u-pause">⏸ Pause</button>
+    <button id="u-step">⏭ Step</button>
+    <button id="u-reset">⟲ Reset</button>
+    <span class="speeds" id="u-speeds"><button data-s="1">1×</button><button data-s="2">2×</button><button data-s="4" class="on">4×</button></span>
+    <label class="scrub"><span class="sr">Time scrubber</span><input type="range" id="u-scrub" min="0" max="0" value="0" aria-label="Time scrubber"></label>
+    <span id="u-clock" class="num">—</span>
+    <button id="u-live" class="hidden">Back to live</button>
+  </div>
+
+  <!-- ===== Simple view: Layer 1 (always) and Layer 2 (on request) ===== -->
+  <div id="simple-root">
+    <p id="u-desc" class="muted"></p>
+    <div id="u-banner" class="notice hidden"></div>
+    <section class="layer1 card" id="layer1" aria-live="polite">
+      <div class="status" id="u-status"><span id="u-status-label">Press Play</span></div>
+      <p class="line" id="u-line"></p>
+      <p class="sentence" id="u-sentence">Choose a scenario above and press Play.</p>
+      <div class="conf">
+        <span class="lbl" data-tip="How honest the forecasts have been lately: full means that when it said 70%, it really happened about 70% of the time.">Confidence</span>
+        <div class="confbar" role="img" aria-label="Confidence"><i id="u-bar"></i></div>
+        <b id="u-conf-word">—</b>
+      </div>
+      <p class="muted small" id="u-conf-note"></p>
+      <div class="todo"><b>What to do:</b> <span id="u-todo">—</span></div>
+    </section>
+    <button id="u-more" class="more">Show more detail ▾</button>
+    <section id="layer2" class="hidden">
+      <div class="card"><h2 id="u-grid-title">Zones</h2><div id="u-grid" class="zgrid"></div><p class="muted small" id="u-grid-note"></p></div>
+      <div class="card"><h2>Threat level over time</h2><canvas id="u-threat" height="150"></canvas></div>
+      <div class="card two">
+        <div><h2>What's happening</h2><p id="u-happening">—</p></div>
+        <div><h2>What's expected</h2><p id="u-expected">—</p></div>
+      </div>
+      <div class="card rumor hidden" id="u-rumor"></div>
+      <div class="card"><h2>Alert log</h2><ul id="u-log" class="alog"><li class="muted">Nothing yet.</li></ul></div>
+    </section>
+  </div>
+
+  <!-- ===== Technical view of the nowcast mode ===== -->
+  <div id="nowcast-tech"></div>
+
+  <!-- ===== Technical view of the rules engine: the existing dashboard ===== -->
+  <div id="tech-root">
   <!-- Top bar: scenario, speed, play controls, clock, mode -->
   <header class="topbar">
     <h1>The First 10 Minutes</h1>
@@ -144,6 +207,9 @@
     <div class="banner fallback hidden" id="b-fallback">FALLBACK — engine error, using baseline</div>
   </div>
 
+  </div><!-- /tech-root -->
+
   <script src="app.js"></script>
+  <script src="simple.js"></script>
 </body>
 </html>

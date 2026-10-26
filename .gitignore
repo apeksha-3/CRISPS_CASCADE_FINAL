@@ -14,3 +14,4 @@ data/real/*
 !data/real/MANIFEST-phase9.md
 # Offline demo recording (docs/demo-backup.md): too large for the repo
 docs/demo-recording.mp4
+__pycache__/

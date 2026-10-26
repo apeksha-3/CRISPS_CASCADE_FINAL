@@ -200,6 +200,8 @@ npx tsx scripts/real/fetch9.ts && npx tsx scripts/real/nowcast-data.ts
 python3 scripts/ml/train.py
 ```
 
+**Phase 10 (dashboard for people).** The dashboard now opens on a simple view: one large status, one plain sentence, a confidence bar and a "What to do" line, with a "Show more detail" layer (zone grid, threat line, what is happening and expected, rumor callout, alert log) and the original technical dashboard behind a toggle. A mode switch runs either the rules engine on simulated crises or the ML nowcast replaying three real NYC events, with a confidence gate that shows "Not enough reliable data to forecast" instead of a number when the model's recent calibration or inputs are not good enough. Rolling recalibration was tested and **not adopted** (its improvement was not statistically clear). See [docs/phase-reports/phase-10.md](docs/phase-reports/phase-10.md) and `docs/screenshots/`.
+
 ## LIMITATIONS
 
 Stated plainly. Read these before trusting any number in this repo.

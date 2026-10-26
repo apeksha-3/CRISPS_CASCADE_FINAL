@@ -1,0 +1,42 @@
+{
+ "note": "Rows no adapter could map, counted by reason, summed over every episode built by scripts/real/build.ts (a row seen by several episodes is counted in each). Nothing is invented to fill a gap.",
+ "traffic_links": {
+  "mapped": 64,
+  "outside": 73,
+  "noCoords": 0
+ },
+ "reasons": {
+  "ems: district is not one of the 10 selected zones": 103735,
+  "dot: link has no zone (no coordinates, or more than 6 km from every zone centroid)": 18981,
+  "dot: status is not 0 (sensor sent no valid reading): silence": 3332,
+  "ems: no usable community district": 1447,
+  "311: community board is not one of the 10 selected zones": 1393,
+  "311: not a flooding, drainage or electric complaint (Water System / Fire Hydrant Emergency)": 76,
+  "collisions: more than 6 km from every zone centroid": 73,
+  "311: not a flooding, drainage or electric complaint (Water System / Leak)": 71,
+  "dot: no dry-day baseline for this link and hour (fewer than 8 samples): reported, not scored": 58,
+  "311: not a flooding, drainage or electric complaint (Water System / Hydrant Running)": 43,
+  "collisions: no coordinates": 40,
+  "311: not a flooding, drainage or electric complaint (Water System / Dirty Water)": 40,
+  "311: not a flooding, drainage or electric complaint (Water System / Possible Water Main Break)": 30,
+  "311: not a flooding, drainage or electric complaint (Water System / Hydrant Defective)": 29,
+  "311: not a flooding, drainage or electric complaint (Water System / Hydrant Running Full)": 26,
+  "311: not a flooding, drainage or electric complaint (Water System / Hydrant Leaking)": 20,
+  "311: not a flooding, drainage or electric complaint (Sewer / Manhole Cover Missing)": 17,
+  "311: no usable community board": 11,
+  "311: not a flooding, drainage or electric complaint (Sewer / Other Sewer Problem)": 10,
+  "311: not a flooding, drainage or electric complaint (Water System / LOW WATER PRESSURE - WLWP)": 8,
+  "311: not a flooding, drainage or electric complaint (Water System / Hydrant Knocked Over/Missing)": 6,
+  "311: not a flooding, drainage or electric complaint (Sewer / Catch Basin Sunken/Damaged/Raised)": 6,
+  "311: not a flooding, drainage or electric complaint (Water System / No Water)": 5,
+  "311: not a flooding, drainage or electric complaint (Water System / Other Water Problem)": 5,
+  "311: not a flooding, drainage or electric complaint (Water System / Hyd Valve Box Cover Missing)": 2,
+  "311: not a flooding, drainage or electric complaint (Sewer / RAIN GARDEN DEBRIS)": 2,
+  "311: not a flooding, drainage or electric complaint (Water System / Hydrant Locking Device Request)": 2,
+  "311: not a flooding, drainage or electric complaint (Sewer / Catch Basin Search)": 1,
+  "311: not a flooding, drainage or electric complaint (Sewer / Defective/Missing Curb Piece)": 1,
+  "rain: 5-minute bucket with fewer than 3 valid minutes: missing report": 1,
+  "311: not a flooding, drainage or electric complaint (Sewer / Catch Basin Grating Missing)": 1,
+  "311: not a flooding, drainage or electric complaint (Sewer / Sewer Odor)": 1
+ }
+}

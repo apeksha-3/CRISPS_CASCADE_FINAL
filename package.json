@@ -11,7 +11,12 @@
     "test": "vitest run",
     "typecheck": "tsc --noEmit",
     "tune": "tsx eval/tune.ts",
-    "demo-check": "tsx server/demo-check.ts"
+    "demo-check": "tsx server/demo-check.ts",
+    "real:fetch": "tsx scripts/real/fetch.ts",
+    "real:build": "tsx scripts/real/build.ts",
+    "real:plot": "tsx scripts/real/plot.ts",
+    "real:actions": "tsx scripts/real/actions.ts",
+    "real:crosscheck": "tsx scripts/real/crosscheck.ts"
   },
   "dependencies": {
     "express": "^5.3.0"

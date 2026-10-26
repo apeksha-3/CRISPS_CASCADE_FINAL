@@ -1,0 +1,67 @@
+{
+  "note": "Hand-written. Every label says where it comes from. Stage times that the real data cannot supply are left out (null), and the eval handles that. Episode starts are computed by real/episodes.ts from the rules in start_rule; they are never typed in here.",
+  "cascades": [
+    {
+      "event_id": "ida-2021",
+      "window": "ida-2021",
+      "hypothesis": "CASCADING_CRISIS",
+      "start_rule": "episode starts offset_min minutes BEFORE onset_local, so the onset is offset_min minutes into the 45-minute episode",
+      "offsets_min": [10, 20, 30],
+      "onset_local": "2021-09-01T21:28:00",
+      "onset_source": {
+        "url": "https://mesonet.agron.iastate.edu/cgi-bin/afos/retrieve.py?pil=FFWOKX&limit=100&sdate=2021-09-01T22:00Z&edate=2021-09-02T05:00Z&fmt=text",
+        "what": "NWS New York (OKX) Flash Flood Warning product WGUS51 KOKX 020128 issued 9:28 PM EDT Wed Sep 1 2021: '...FLASH FLOOD EMERGENCY FOR NEW YORK CITY METRO...' (Bronx, Kings, New York, Queens). The first NWS flash flood warning that listed these NYC counties was issued 6:51 PM EDT (WGUS51 KOKX 012251)."
+      },
+      "critical_local": "2021-09-01T22:45:00",
+      "critical_source": {
+        "url": "https://www.amny.com/new-york/torrential-rains-in-nyc-suspend-all-subway-service/",
+        "what": "amNY: every subway line suspended 'as of 10:45 p.m. Sept. 1' (from the MTA homepage)."
+      },
+      "confidence": "onset: high that the NWS declared a flash flood emergency for NYC at 9:28 PM; medium as the physical onset, because the record hour of rain (Central Park 3.15 in, 8:51-9:51 PM per amNY) began about 37 minutes earlier. critical: medium; the 10:45 PM time is the MTA website state at one moment, not a logged decision time. Neither time is a hospital-stage time: the hospital stage is not labelled."
+    },
+    {
+      "event_id": "flood-2023",
+      "window": "flood-2023",
+      "hypothesis": "CASCADING_CRISIS",
+      "start_rule": "episode starts offset_min minutes BEFORE the start of the heaviest 60 minutes of rain at KNYC/KJFK/KLGA (IEM 1-minute data); this anchor is data-derived, it is NOT an onset claim",
+      "offsets_min": [10, 20, 30],
+      "onset_local": null,
+      "onset_source": {
+        "url": "https://mesonet.agron.iastate.edu/cgi-bin/afos/retrieve.py?pil=FFWOKX&limit=200&sdate=2023-09-28T20:00Z&edate=2023-09-29T13:00Z&fmt=text",
+        "what": "NWS OKX issued flash flood warnings from 1:43 AM EDT Fri Sep 29 2023 (WGUS51 KOKX 290543) and repeatedly through the day, but no flash flood EMERGENCY for NYC appears in the archive. No single citable onset time, so onset is null."
+      },
+      "critical_local": null,
+      "critical_source": {
+        "url": "https://www.timeout.com/newyork/news/these-subway-lines-are-currently-suspended-given-major-floods-092923",
+        "what": "Time Out: as of 11:14 a.m. the B, G, N, R, W lines and the Prospect Park shuttle were suspended. That is a partial suspension, not the system-wide Ida event, so critical_time is null."
+      },
+      "confidence": "medium that this is a cascade: state of emergency declared for NYC (Gov. Hochul, Mayor Adams), widespread street and subway flooding, a closed LaGuardia terminal. No hospital-stage evidence was found in public sources. Timing labels are null."
+    }
+  ],
+  "controls": {
+    "rain": {
+      "hypothesis": "NOISE",
+      "lookalike_type": "rain_only",
+      "start_rule": "episode starts 15 minutes before the heaviest 30 minutes of rain that day (IEM 1-minute data, max over the 3 stations), clamped to fit inside the day",
+      "source": {
+        "url": "https://mesonet.agron.iastate.edu/cgi-bin/request/daily.py?network=NY_ASOS&stations=NYC&stations=JFK&stations=LGA&sts=2022-01-01&ets=2024-01-01&format=csv",
+        "what": "Chosen by rule from IEM daily precipitation: weekday, KNYC total 1.0-2.5 in, no NWS flash flood emergency for NYC that day (checked in the IEM archive of OKX flash flood warnings), not within 3 days of a cascade window."
+      },
+      "confidence": "medium. 'No major incident' is checked only by the absence of an NWS emergency; a heavy-rain day can still contain local flooding that 311 would show. Per-day warning counts are in real/controls.json."
+    },
+    "dry": {
+      "hypothesis": "NOISE",
+      "start_rule": "two episodes per day, starting at 08:00 and 19:00 local",
+      "source": {
+        "url": "https://mesonet.agron.iastate.edu/cgi-bin/request/daily.py?network=NY_ASOS&stations=NYC&stations=JFK&stations=LGA&sts=2022-01-01&ets=2024-01-01&format=csv",
+        "what": "Chosen by rule: Tue-Thu, zero precipitation at KNYC, KJFK and KLGA that day and the day before, no holiday, the DOT speeds dataset present, spread over 2022."
+      },
+      "confidence": "high that nothing flood-related happened (no rain at all)."
+    }
+  },
+  "empty_classes": {
+    "SENSOR_FAILURE": "No real sensor failure with a citable source was found, so no real SENSOR_FAILURE episodes exist. The class is empty on purpose.",
+    "ISOLATED_INCIDENT": "No real isolated incident with a citable source was chosen, so no real ISOLATED_INCIDENT episodes exist. Collisions are used only as evidence inside other episodes.",
+    "injected": "No injected variants (gateway outage or lie, rumor wave, duplicate storm, cutout) were built in Phase 7."
+  }
+}

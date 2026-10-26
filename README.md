@@ -158,11 +158,34 @@ npx tsc --noEmit                                # type check
 
 Conventions: time is whole seconds since episode start, one tick = 60 s. Seeds: dev 1000+, test 5000+, prior-shift 8000+. Same (type, seed) = byte-identical episode. Tuning only ever saw dev.
 
+## Real data (Phase 7)
+
+The engine was built and tuned only on the simulator. Phase 7 replays it, unchanged, on real NYC data. **What is real, what is synthetic, what is manual:**
+
+| | |
+|---|---|
+| **Real** | Every observation: 311 requests, DOT traffic speeds, EMS dispatch and hospital arrivals, NYPD collisions, ASOS 1-minute rain (IEM). Times are real, converted from UTC to NYC local time with the real timezone rules. |
+| **Real, but chosen by a fixed rule** | The 10 zones (the 10 community districts with the most 311 volume on dry control days), the control days (8 rain, 10 dry), and the baselines ("what is normal": dry control days only). Rules: [docs/real-zones.md](docs/real-zones.md). |
+| **Synthetic** | The delivery delay of each event (the simulator's delay model, seeded by episode id), the 6 gateways (real NYC feeds have none), the source registry's heartbeat intervals, severity for collisions (an assumed table), and every mapping from a real column to an engine event kind ([real/adapt-*.ts](real/)). |
+| **Manual** | The labels: which episodes are CASCADE or NOISE, the Ida onset (NWS flash flood emergency 21:28 EDT) and critical time (subways suspended 22:45), each with a URL and a confidence note in [real/labels.json](real/labels.json). |
+
+```bash
+npm ci
+npm run real:fetch                         # raw data -> data/real/raw (300 MB, gitignored) + data/real/MANIFEST.md (row counts, SHA-256)
+npm run real:build                         # adapters -> data/episodes/real/ + real/unmapped.json
+npm run eval -- --split real --policy engine           # also count-threshold, always-watch
+npm run real:actions -- engine             # what the policy did in each real cascade episode
+npm run real:plot                          # docs/real-ida-timeline.html
+npm run real:crosscheck                    # NOAA ISD hourly vs IEM rain
+```
+
+Result, stated plainly: on 34 real episodes the engine is **worse** than on the simulator (Brier 0.779 vs 0.414) and never reached ALERT on any of the 6 real cascade episodes (2 real events). The count-threshold baseline scores better on Brier (0.344) there. Causes, with an ablation, are in [docs/phase-reports/phase-7.md](docs/phase-reports/phase-7.md). Nothing was retuned.
+
 ## LIMITATIONS
 
 Stated plainly. Read these before trusting any number in this repo.
 
-1. **All data is synthetic.** Every episode comes from our own simulator; calibration (Brier 0.414) is verified only against that simulator, not against a real city.
+1. **The benchmark data is synthetic.** Every dev, test and prior-shift episode comes from our own simulator; calibration (Brier 0.414) is verified only against that simulator. Phase 7 adds a small real-data replay (see limitations 11 to 16), which shows the engine does not transfer.
 2. **The causal graph and likelihoods are hand-specified, not discovered from data.** The chain rain → drainage → traffic → calls → hospitals → power, its lags and the likelihood tables were written by hand, then nudged by a small dev-set tuner.
 3. **Learning is lightweight.** Beta counts for trust and decayed counts for priors, plus CUSUM; no deep learning. Trust effectively learns source types, because the simulator redraws each source's reliability every episode.
 4. **The decision is city-wide.** One action for the whole city; there is no per-zone action granularity, even though evidence is tracked per zone.
@@ -172,6 +195,13 @@ Stated plainly. Read these before trusting any number in this repo.
 8. **Lead time is negative.** The first ALERT comes about 6 minutes after the critical time (-6.17 min; count-threshold -3.88). Cascades and lookalikes are indistinguishable until late-stage signals (hospitals, power) arrive, by design of the scenarios; committing earlier would buy false alarms.
 9. **The DEGRADED threshold is tuned for the simulator's cutout severity.** The demo uses 80%, the eval 50%; a real deployment would calibrate against historical outage patterns.
 10. **Prior-shift adaptation does not pay off within 50 episodes.** The learned P(cascade) does move toward the new regime (0.06 at episode 25, 0.22 at episode 75), but Brier after the shift is no better than a static prior (0.401 vs 0.397), and the CUSUM alarm does not fire on the committed prior-shift sequence (it fired on 9 of 10 dev-seeded copies, around episode 70). The benefit would need longer horizons.
+
+11. **Very few real cascades.** The real split holds 2 cascade events (Ida 2021, the 29 Sep 2023 flood) cut into 6 episodes that are not independent, and 28 NOISE episodes. There are no real SENSOR_FAILURE or ISOLATED_INCIDENT episodes (none with a citable source). Any real-data number is an anecdote, not a statistic.
+12. **Arrival delay is synthesized.** Real timestamps say when something happened. The time the engine "hears" it is the simulator's delay model added on top, so lead times and the ordering of near-simultaneous events are not measured on real transport.
+13. **Gateways are synthetic.** Real NYC feeds have no gateways; the 6 `synth-gw` groups are regions we drew. Gateway-failure reasoning (R5) is therefore untested on real data.
+14. **The power stage is weak.** The only power signal is 311 "ELECTRIC", an HPD building-wiring complaint, not grid load or an outage. It is flagged as a weak proxy and carries no severity.
+15. **Traffic zones are approximate.** DOT links and collisions have no community board, so each goes to the nearest zone centroid within 6 km. 73 of 137 links fall outside all 10 zones and are unused. 8 to 14 of the 64 used links report "no valid reading" for a whole episode, which the engine reads as dark sources.
+16. **Labels are manual.** CASCADE and NOISE come from NWS and news sources and a rain-and-weekday rule, not from an instrument. "No major incident" on a rain-control day means only "no NWS flash flood emergency". Stage times the data cannot supply are null. The Central Park gauge is missing from the IEM 1-minute feed for the Ida peak hours (ISD has it).
 
 ## Requirements
 

@@ -1,0 +1,13 @@
+dry days found: 1506; ticks dropped: {"no rain data at the tick":27,"fewer than 30 preceding dry days":2650,"data ends within 60 minutes":0}
+
+split      events  ticks   y311 positive   traffic ticks  traffic positive
+train         456  12842           29.3%            9477             9.3%
+validate      102   2547           37.6%            2106             4.6%
+test          206   6529           26.7%            5945             7.7%
+all           764  21918           29.5%           17528             8.2%
+
+311 threshold (reports in the next 60 min): min 5.0, median 6.0, max 41.0
+traffic threshold (share of healthy links in slowdown): min 0.10, median 0.18, max 0.62
+ticks with a DOT feature: 84.4%
+
+wrote data/ml/ticks.csv (21918 ticks), data/ml/events.json (764 events)

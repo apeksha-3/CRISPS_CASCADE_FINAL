@@ -192,6 +192,14 @@ npx tsx scripts/real/lags.ts                           # stage lags table
 npx tsx scripts/real/citywide.ts                       # EMS and hospital citywide check
 ```
 
+**Phase 9 (offline nowcast, not wired into the engine).** A calibrated model trained on real rain events, 2019 to 2026, predicts whether 311 flood reports (or DOT slowdowns) will be far above normal in the next hour. Split by time (train 2019-2023, validate 2024, test 2025 on) and by rain event; 764 events. On the test years it beats climatology and a rain-threshold rule for traffic slowdowns (Brier 0.056 against 0.072, well calibrated) and, for 311 reports, only the gradient-boosted model does, and not by more than a one-feature "311 is already elevated" rule; calibration drifts between years. Engine diagnostic: all of the simulator's cascade evidence comes from the late stages that real data lacks. See [docs/phase-reports/phase-9.md](docs/phase-reports/phase-9.md). Python (`scripts/ml/`) is for training only; the runtime is `ml/nowcast.ts`.
+
+```bash
+pip install -r scripts/ml/requirements.txt
+npx tsx scripts/real/fetch9.ts && npx tsx scripts/real/nowcast-data.ts
+python3 scripts/ml/train.py
+```
+
 ## LIMITATIONS
 
 Stated plainly. Read these before trusting any number in this repo.
@@ -213,6 +221,8 @@ Stated plainly. Read these before trusting any number in this repo.
 14. **The power stage is weak.** The only power signal is 311 "ELECTRIC", an HPD building-wiring complaint, not grid load or an outage. It is flagged as a weak proxy and carries no severity.
 15. **Traffic zones are approximate and the link inventory drifts.** DOT links and collisions have no community board, so each goes to the nearest zone centroid within 6 km. 73 of 137 links fall outside all 10 zones and are unused. Only links that report on normal days are registered (Phase 8), judged on 2022 dry days; for events in 2025 and 2026 the engine's P(sensor failure) is 0.4 to 0.57, which suggests the link list has changed since 2022. Before that fix, 8 to 14 of the 64 used links reported "no valid reading" for a whole episode, which the engine read as dark sources (11 links are now excluded, 53 registered).
 16. **Labels are manual.** CASCADE and NOISE come from NWS and news sources and a rain-and-weekday rule, not from an instrument. "No major incident" on a rain-control day means only "no NWS flash flood emergency". Stage times the data cannot supply are null. The Central Park gauge is missing from the IEM 1-minute feed for the Ida peak hours (ISD has it).
+
+17. **The nowcast is offline and its 311 label measures reporting, not damage.** Probabilities drift between years (Platt scaling fitted on 2024 is overconfident in 2025 to 2026) and need recalibration before any operational use; the model is not connected to the engine.
 
 ## Requirements
 

@@ -1,0 +1,3 @@
+# Offline training only (Phase 9). The engine, the server and the TypeScript inference function do not need Python.
+numpy>=2.0
+scikit-learn>=1.5

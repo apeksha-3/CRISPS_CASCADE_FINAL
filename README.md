@@ -179,7 +179,18 @@ npm run real:plot                          # docs/real-ida-timeline.html
 npm run real:crosscheck                    # NOAA ISD hourly vs IEM rain
 ```
 
-Result, stated plainly: on 34 real episodes the engine is **worse** than on the simulator (Brier 0.779 vs 0.414) and never reached ALERT on any of the 6 real cascade episodes (2 real events). The count-threshold baseline scores better on Brier (0.344) there. Causes, with an ablation, are in [docs/phase-reports/phase-7.md](docs/phase-reports/phase-7.md). Nothing was retuned.
+Result of Phase 7, stated plainly: on 34 real episodes the engine is **worse** than on the simulator (Brier 0.779 vs 0.414) and never reached ALERT on any of the 6 real cascade episodes (2 real events). The count-threshold baseline scores better on Brier (0.344) there. Causes, with an ablation, are in [docs/phase-reports/phase-7.md](docs/phase-reports/phase-7.md). Nothing was retuned.
+
+**Phase 8 (real-data hardening).** Registering only DOT links that report on normal days removes about two thirds of the Brier gap to the simulator (engine 0.777 to 0.536 on the same 34 episodes), but the engine still never alerts on a real cascade: its P(cascade) never rises above the 0.10 base rate. Ten real flood events were collected (3 scored as cascades, 7 watched as "ambiguous"); results are reported per event with leave-one-event-out learning. See [docs/phase-reports/phase-8.md](docs/phase-reports/phase-8.md), [docs/real-events.md](docs/real-events.md) and [docs/real-ems-citywide.html](docs/real-ems-citywide.html).
+
+```bash
+npm run real:fetch && npm run real:build               # Phase 7 data and episodes (data/episodes/real, real-ambiguous)
+npx tsx scripts/real/events-find.ts && npx tsx scripts/real/events-rank.ts   # NWS candidates, rain ranking, coverage
+npx tsx scripts/real/fetch8.ts && npm run real:build   # Phase 8 event windows, then rebuild
+npx tsx scripts/real/replay.ts --split real --mode loeo   # per-event replay, leave-one-event-out
+npx tsx scripts/real/lags.ts                           # stage lags table
+npx tsx scripts/real/citywide.ts                       # EMS and hospital citywide check
+```
 
 ## LIMITATIONS
 
@@ -196,11 +207,11 @@ Stated plainly. Read these before trusting any number in this repo.
 9. **The DEGRADED threshold is tuned for the simulator's cutout severity.** The demo uses 80%, the eval 50%; a real deployment would calibrate against historical outage patterns.
 10. **Prior-shift adaptation does not pay off within 50 episodes.** The learned P(cascade) does move toward the new regime (0.06 at episode 25, 0.22 at episode 75), but Brier after the shift is no better than a static prior (0.401 vs 0.397), and the CUSUM alarm does not fire on the committed prior-shift sequence (it fired on 9 of 10 dev-seeded copies, around episode 70). The benefit would need longer horizons.
 
-11. **Very few real cascades.** The real split holds 2 cascade events (Ida 2021, the 29 Sep 2023 flood) cut into 6 episodes that are not independent, and 28 NOISE episodes. There are no real SENSOR_FAILURE or ISOLATED_INCIDENT episodes (none with a citable source). Any real-data number is an anecdote, not a statistic.
+11. **Very few real cascades.** The scored real split holds 3 cascade events (Ida 2021, the 29 Sep 2023 flood, the 14 Jul 2025 flood) cut into 9 episodes that are not independent, and 28 NOISE episodes; 7 more flood-warning events are watched but not scored. There are no real SENSOR_FAILURE or ISOLATED_INCIDENT episodes (none with a citable source). Any real-data number is an anecdote, not a statistic.
 12. **Arrival delay is synthesized.** Real timestamps say when something happened. The time the engine "hears" it is the simulator's delay model added on top, so lead times and the ordering of near-simultaneous events are not measured on real transport.
 13. **Gateways are synthetic.** Real NYC feeds have no gateways; the 6 `synth-gw` groups are regions we drew. Gateway-failure reasoning (R5) is therefore untested on real data.
 14. **The power stage is weak.** The only power signal is 311 "ELECTRIC", an HPD building-wiring complaint, not grid load or an outage. It is flagged as a weak proxy and carries no severity.
-15. **Traffic zones are approximate.** DOT links and collisions have no community board, so each goes to the nearest zone centroid within 6 km. 73 of 137 links fall outside all 10 zones and are unused. 8 to 14 of the 64 used links report "no valid reading" for a whole episode, which the engine reads as dark sources.
+15. **Traffic zones are approximate and the link inventory drifts.** DOT links and collisions have no community board, so each goes to the nearest zone centroid within 6 km. 73 of 137 links fall outside all 10 zones and are unused. Only links that report on normal days are registered (Phase 8), judged on 2022 dry days; for events in 2025 and 2026 the engine's P(sensor failure) is 0.4 to 0.57, which suggests the link list has changed since 2022. Before that fix, 8 to 14 of the 64 used links reported "no valid reading" for a whole episode, which the engine read as dark sources (11 links are now excluded, 53 registered).
 16. **Labels are manual.** CASCADE and NOISE come from NWS and news sources and a rain-and-weekday rule, not from an instrument. "No major incident" on a rain-control day means only "no NWS flash flood emergency". Stage times the data cannot supply are null. The Central Park gauge is missing from the IEM 1-minute feed for the Ida peak hours (ISD has it).
 
 ## Requirements

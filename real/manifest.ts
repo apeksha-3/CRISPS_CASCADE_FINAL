@@ -29,12 +29,14 @@ export function saveRaw(file: string, content: string, meta: Omit<ManifestEntry,
   return { file, sha256: sha256(content), ...meta };
 }
 
-export function writeManifest(entries: ManifestEntry[]): void {
+export const MANIFEST8_PATH = join(process.cwd(), "data", "real", "MANIFEST-phase8.md");
+
+export function writeManifest(entries: ManifestEntry[], path = MANIFEST_PATH, title = "Real data manifest (Phase 7)"): void {
   const sorted = entries.slice().sort((a, b) => (a.file < b.file ? -1 : 1));
   const L = [
-    "# Real data manifest (Phase 7)",
+    `# ${title}`,
     "",
-    "Written by `npx tsx scripts/real/fetch.ts`. The raw files live in `data/real/raw/` (gitignored).",
+    "Written by the fetch scripts in `scripts/real/`. The raw files live in `data/real/raw/` (gitignored).",
     "Re-fetching must reproduce these row counts and hashes for any file the portal has not revised.",
     "Socrata rows are JSON arrays in the portal's own order (date, then id); IEM and NWS files are the raw response text.",
     "Times: Socrata timestamps are NYC local wall clock; IEM valid(UTC) and NOAA DATE are UTC.",
@@ -44,6 +46,6 @@ export function writeManifest(entries: ManifestEntry[]): void {
     ...sorted.map((e) => `| ${e.file} | ${e.dataset} | ${e.window} | ${e.rows} | ${e.sha256} | \`${e.query.replace(/\|/g, "\\|")}\` |`),
     "",
   ];
-  mkdirSync(dirname(MANIFEST_PATH), { recursive: true });
-  writeFileSync(MANIFEST_PATH, L.join("\n"));
+  mkdirSync(dirname(path), { recursive: true });
+  writeFileSync(path, L.join("\n"));
 }

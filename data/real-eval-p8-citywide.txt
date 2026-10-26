@@ -1,0 +1,14 @@
+
+Ida 2021-09-01 (NWS emergency 21:28, subways 22:45): trailing 30-minute counts against the 10 dry control days
+  calls              citywide  max z   6.8 at 23:45  (30-min count 136 vs normal 82.2, x1.65)   rises (z>=3 for 2 bins): YES from 23:25
+  hospital arrivals  citywide  max z   1.0 at 19:40  (30-min count 79 vs normal 70.1, x1.13)   rises (z>=3 for 2 bins): NO
+  calls              10 zones  max z   4.0 at 20:30  (30-min count 32 vs normal 22.2, x1.44)   rises (z>=3 for 2 bins): YES from 20:30
+  hospital arrivals  10 zones  max z   2.4 at 19:35  (30-min count 24 vs normal 16.1, x1.49)   rises (z>=3 for 2 bins): NO
+
+Flood 2023-09-29: trailing 30-minute counts against the 10 dry control days
+  calls              citywide  max z   4.5 at 07:40  (30-min count 92 vs normal 62.9, x1.46)   rises (z>=3 for 2 bins): YES from 07:35
+  hospital arrivals  citywide  max z   3.5 at 11:15  (30-min count 100 vs normal 69.5, x1.44)   rises (z>=3 for 2 bins): NO
+  calls              10 zones  max z   6.2 at 07:45  (30-min count 25 vs normal 13.6, x1.84)   rises (z>=3 for 2 bins): NO
+  hospital arrivals  10 zones  max z   3.4 at 09:35  (30-min count 21 vs normal 12.9, x1.63)   rises (z>=3 for 2 bins): NO
+
+wrote docs/real-ems-citywide.html

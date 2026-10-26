@@ -107,6 +107,10 @@ describe("adapters (fixtures)", () => {
     expect(map311("Sewer", "Catch Basin Clogged/Flooding (Use Comments) (SC)")?.kind).toBe("drainage_anomaly");
     expect(map311("Water System", "Excessive Water In Basement (WEFB)")?.kind).toBe("citizen_report");
     expect(map311("ELECTRIC", "")?.kind).toBe("power_comms_load");
+    expect(map311("Sewer Maintenance", "Flooding on Street")?.kind).toBe("citizen_report"); // 2026 names
+    expect(map311("Sewer Maintenance", "Catch Basin Clogged")?.kind).toBe("drainage_anomaly");
+    expect(map311("Water Maintenance", "Water in Basement")?.kind).toBe("citizen_report");
+    expect(map311("Water Maintenance", "Leak")).toBeUndefined();
     expect(map311("Water System", "Hydrant Running (WC3)")).toBeUndefined();
     const u = new Unmapped();
     const rows = [
@@ -345,19 +349,21 @@ describe.skipIf(!haveBuilt)("built real episodes (cache)", () => {
   });
   it("the real cascades have null stage times and the other classes are as labelled", () => {
     const cas = eps.filter((e) => e.truth.hypothesis === "CASCADING_CRISIS");
-    expect(cas.length).toBe(6);
+    expect(cas.length).toBe(9);
     for (const c of cas) expect(c.truth.stage_times).toEqual({});
     expect(eps.some((e) => e.truth.hypothesis === "SENSOR_FAILURE" || e.truth.hypothesis === "ISOLATED_INCIDENT")).toBe(false);
-    expect(cas.filter((c) => c.episode_id.includes("flood-2023")).every((c) => c.truth.onset === undefined && c.truth.critical_time === undefined)).toBe(true);
+    expect(cas.filter((c) => c.episode_id.includes("flood-2023") || c.episode_id.includes("flood-2025")).every((c) => c.truth.onset === undefined && c.truth.critical_time === undefined)).toBe(true);
     expect(cas.filter((c) => c.episode_id.includes("ida")).every((c) => c.truth.onset !== undefined && c.truth.critical_time !== undefined)).toBe(true);
   });
   it("rebuilding from the same cache gives byte-identical episodes", async () => {
     const { loadContext } = await import("../real/context");
     const { buildAll } = await import("../real/episodes");
     const ctx = loadContext();
-    const a = buildAll(ctx, new Unmapped()).map((b) => JSON.stringify(b.episode));
-    const b = buildAll(ctx, new Unmapped()).map((b2) => JSON.stringify(b2.episode));
-    expect(a.length).toBe(34);
+    const opts = { registry: "healthy" as const, phase8Events: true };
+    const scored = (u: Unmapped) => buildAll(ctx, u, opts).filter((x) => x.tier !== "ambiguous");
+    const a = scored(new Unmapped()).map((x) => JSON.stringify(x.episode));
+    const b = scored(new Unmapped()).map((x) => JSON.stringify(x.episode));
+    expect(a.length).toBe(37);
     expect(b).toEqual(a);
     const onDisk = readdirSync(BUILT).filter((f) => f.endsWith(".json")).sort().map((f) => readFileSync(join(BUILT, f), "utf8"));
     expect([...a].sort()).toEqual([...onDisk].sort());

@@ -1,0 +1,11 @@
+split real-ambiguous, 21 episodes, 7 events, mode loeo
+
+AMBIGUOUS events: a flash flood warning named NYC counties, but no cited cascade-class impact. Not scored (no Brier, no false alarm, no lead time): only what each policy DID.
+event              engine                               engine-frozen                        count-threshold                      always-watch                        
+flood-2020-08-12   PREPARE  ALERT+ 0/3  max P(C) 0.10  P(S) 0.20 PREPARE  ALERT+ 0/3  max P(C) 0.10  P(S) 0.13 WATCH    ALERT+ 0/3  max P(C) 0.06  P(S) 0.12 WATCH    ALERT+ 0/3  max P(C) 0.10  P(S) 0.15
+flood-2021-08-27   PREPARE  ALERT+ 0/3  max P(C) 0.10  P(S) 0.17 PREPARE  ALERT+ 0/3  max P(C) 0.10  P(S) 0.06 PREPARE  ALERT+ 0/3  max P(C) 0.15  P(S) 0.12 WATCH    ALERT+ 0/3  max P(C) 0.10  P(S) 0.15
+flood-2022-09-13   PREPARE  ALERT+ 0/3  max P(C) 0.10  P(S) 0.23 PREPARE  ALERT+ 0/3  max P(C) 0.10  P(S) 0.10 WATCH    ALERT+ 0/3  max P(C) 0.06  P(S) 0.12 WATCH    ALERT+ 0/3  max P(C) 0.10  P(S) 0.15
+flood-2023-07-18   PREPARE  ALERT+ 0/3  max P(C) 0.09  P(S) 0.21 PREPARE  ALERT+ 0/3  max P(C) 0.07  P(S) 0.08 WATCH    ALERT+ 0/3  max P(C) 0.06  P(S) 0.12 WATCH    ALERT+ 0/3  max P(C) 0.10  P(S) 0.15
+flood-2025-10-30   PREPARE  ALERT+ 0/3  max P(C) 0.10  P(S) 0.40 PREPARE  ALERT+ 0/3  max P(C) 0.10  P(S) 0.11 ALERT    ALERT+ 3/3  max P(C) 0.35  P(S) 0.12 WATCH    ALERT+ 0/3  max P(C) 0.10  P(S) 0.15
+flood-2026-08-20   PREPARE  ALERT+ 0/3  max P(C) 0.10  P(S) 0.55 PREPARE  ALERT+ 0/3  max P(C) 0.08  P(S) 0.40 WATCH    ALERT+ 0/3  max P(C) 0.06  P(S) 0.12 WATCH    ALERT+ 0/3  max P(C) 0.10  P(S) 0.15
+flood-2026-08-23   PREPARE  ALERT+ 0/3  max P(C) 0.10  P(S) 0.57 PREPARE  ALERT+ 0/3  max P(C) 0.10  P(S) 0.49 WATCH    ALERT+ 0/3  max P(C) 0.06  P(S) 0.12 WATCH    ALERT+ 0/3  max P(C) 0.10  P(S) 0.15

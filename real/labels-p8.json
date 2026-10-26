@@ -1,0 +1,220 @@
+{
+ "note": "Hand-written labels for the Phase 8 events (the two Phase 7 cascades stay in labels.json). tier cascade = the label is CASCADING_CRISIS because a cited source shows an NYC-wide impact (flash flood emergency, emergency declaration, or flood-caused multi-line subway suspension). tier ambiguous = an NWS flash flood warning named NYC counties and the data coverage is good, but no cited source shows a cascade-class impact: these are NOT scored as cascade or noise, only watched. Onset and critical times are null unless a source gives a time. Episode starts come from the rule in start_rule.",
+ "start_rule": "episode starts offset_min minutes BEFORE the start of the heaviest 60 minutes of rain at KNYC/KJFK/KLGA (IEM 1-minute data): a data-derived anchor, not an onset",
+ "offsets_min": [
+  10,
+  20,
+  30
+ ],
+ "events": [
+  {
+   "event_id": "flood-2025-07-14",
+   "nws_event": "ffw-2025-07-14",
+   "window": "evt-2025-07-14",
+   "tier": "cascade",
+   "hypothesis": "CASCADING_CRISIS",
+   "first_nyc_warning_local": "2025-07-14T16:13:00",
+   "nws_products": 4,
+   "boroughs": [
+    "Bronx",
+    "Kings",
+    "New York",
+    "Queens",
+    "Richmond"
+   ],
+   "peak60_mm": 53.1,
+   "onset_local": null,
+   "critical_local": null,
+   "sources": [
+    {
+     "url": "https://mesonet.agron.iastate.edu/cgi-bin/afos/retrieve.py?pil=FFWOKX&limit=9999&sdate=2025-07-14T00:00Z&edate=2025-07-16T00:00Z&fmt=text",
+     "what": "IEM archive of NWS OKX flash flood warning products: 4 product(s) naming NYC counties, first issued 2025-07-14T16:13:00 local; no flash flood EMERGENCY for NYC."
+    },
+    {
+     "url": "https://www.timeout.com/newyork/news/nyc-subways-swamped-streets-flooded-after-record-rain-071525",
+     "what": "Time Out, 15 Jul 2025: 'MTA officials suspended several subway lines Monday night'; Central Park 2.07 in between 7 and 8 pm, second only to Ida (2021)."
+    }
+   ],
+   "confidence": "medium-high that this is a cascade-class event: NWS flash flood warnings naming all five boroughs (4 products), a cited multi-line subway suspension and the second-wettest hour on record. Which lines and what time are not given by this source, so onset and critical time are null. No NYC emergency declaration was found for that date (the state of emergency in the same news cycle was New Jersey's)."
+  },
+  {
+   "event_id": "flood-2026-08-20",
+   "nws_event": "ffw-2026-08-20",
+   "window": "evt-2026-08-20",
+   "tier": "ambiguous",
+   "hypothesis": null,
+   "first_nyc_warning_local": "2026-08-20T17:39:00",
+   "nws_products": 2,
+   "boroughs": [
+    "Bronx",
+    "Kings",
+    "New York",
+    "Queens",
+    "Richmond"
+   ],
+   "peak60_mm": 46.7,
+   "onset_local": null,
+   "critical_local": null,
+   "sources": [
+    {
+     "url": "https://mesonet.agron.iastate.edu/cgi-bin/afos/retrieve.py?pil=FFWOKX&limit=9999&sdate=2026-08-20T00:00Z&edate=2026-08-22T00:00Z&fmt=text",
+     "what": "IEM archive of NWS OKX flash flood warning products: 2 product(s) naming NYC counties, first issued 2026-08-20T17:39:00 local; no flash flood EMERGENCY for NYC."
+    },
+    {
+     "url": "https://www.nyc.gov/site/em/about/press-releases/20260819_pr_nycem_weather-alert-thunderstorms.page",
+     "what": "NYC Emergency Management weather alert for 20 Aug 2026, Flash Flood Emergency Plan activated, heaviest rain expected 5 to 8 pm. A pre-event notice, not an impact report."
+    }
+   ],
+   "confidence": "low: a flash flood warning for all five boroughs and a forecast, but no source found that confirms flooding impacts (subway, deaths, emergency declaration). Searches returned only pre-event notices and one undated or secondary item."
+  },
+  {
+   "event_id": "flood-2020-08-12",
+   "nws_event": "ffw-2020-08-12",
+   "window": "evt-2020-08-12",
+   "tier": "ambiguous",
+   "hypothesis": null,
+   "first_nyc_warning_local": "2020-08-12T15:14:00",
+   "nws_products": 1,
+   "boroughs": [
+    "Bronx",
+    "New York",
+    "Queens"
+   ],
+   "peak60_mm": 41.7,
+   "onset_local": null,
+   "critical_local": null,
+   "sources": [
+    {
+     "url": "https://mesonet.agron.iastate.edu/cgi-bin/afos/retrieve.py?pil=FFWOKX&limit=9999&sdate=2020-08-12T00:00Z&edate=2020-08-14T00:00Z&fmt=text",
+     "what": "IEM archive of NWS OKX flash flood warning products: 1 product(s) naming NYC counties, first issued 2020-08-12T15:14:00 local; no flash flood EMERGENCY for NYC."
+    }
+   ],
+   "confidence": "low: an NWS flash flood warning naming the Bronx, Manhattan and Queens, 41.7 mm in the heaviest hour; no impact source was looked up."
+  },
+  {
+   "event_id": "flood-2022-09-13",
+   "nws_event": "ffw-2022-09-13",
+   "window": "evt-2022-09-13",
+   "tier": "ambiguous",
+   "hypothesis": null,
+   "first_nyc_warning_local": "2022-09-13T04:29:00",
+   "nws_products": 2,
+   "boroughs": [
+    "Bronx",
+    "Kings",
+    "New York",
+    "Queens",
+    "Richmond"
+   ],
+   "peak60_mm": 36.6,
+   "onset_local": null,
+   "critical_local": null,
+   "sources": [
+    {
+     "url": "https://mesonet.agron.iastate.edu/cgi-bin/afos/retrieve.py?pil=FFWOKX&limit=9999&sdate=2022-09-13T00:00Z&edate=2022-09-15T00:00Z&fmt=text",
+     "what": "IEM archive of NWS OKX flash flood warning products: 2 product(s) naming NYC counties, first issued 2022-09-13T04:29:00 local; no flash flood EMERGENCY for NYC."
+    }
+   ],
+   "confidence": "low: two NWS flash flood warning products naming all five boroughs in the early morning; a web search found no subway or emergency report for that date."
+  },
+  {
+   "event_id": "flood-2026-08-23",
+   "nws_event": "ffw-2026-08-23",
+   "window": "evt-2026-08-23",
+   "tier": "ambiguous",
+   "hypothesis": null,
+   "first_nyc_warning_local": "2026-08-23T06:12:00",
+   "nws_products": 2,
+   "boroughs": [
+    "Bronx",
+    "Kings",
+    "New York",
+    "Queens",
+    "Richmond"
+   ],
+   "peak60_mm": 34.8,
+   "onset_local": null,
+   "critical_local": null,
+   "sources": [
+    {
+     "url": "https://mesonet.agron.iastate.edu/cgi-bin/afos/retrieve.py?pil=FFWOKX&limit=9999&sdate=2026-08-23T00:00Z&edate=2026-08-25T00:00Z&fmt=text",
+     "what": "IEM archive of NWS OKX flash flood warning products: 2 product(s) naming NYC counties, first issued 2026-08-23T06:12:00 local; no flash flood EMERGENCY for NYC."
+    }
+   ],
+   "confidence": "low: two NWS flash flood warning products naming all five boroughs; a web search found no impact report for that date."
+  },
+  {
+   "event_id": "flood-2021-08-27",
+   "nws_event": "ffw-2021-08-27",
+   "window": "evt-2021-08-27",
+   "tier": "ambiguous",
+   "hypothesis": null,
+   "first_nyc_warning_local": "2021-08-27T15:58:00",
+   "nws_products": 3,
+   "boroughs": [
+    "Bronx",
+    "Kings",
+    "New York",
+    "Queens",
+    "Richmond"
+   ],
+   "peak60_mm": 34,
+   "onset_local": null,
+   "critical_local": null,
+   "sources": [
+    {
+     "url": "https://mesonet.agron.iastate.edu/cgi-bin/afos/retrieve.py?pil=FFWOKX&limit=9999&sdate=2021-08-27T00:00Z&edate=2021-08-29T00:00Z&fmt=text",
+     "what": "IEM archive of NWS OKX flash flood warning products: 3 product(s) naming NYC counties, first issued 2021-08-27T15:58:00 local; no flash flood EMERGENCY for NYC."
+    }
+   ],
+   "confidence": "low: three NWS flash flood warning products naming all five boroughs; no impact source was looked up."
+  },
+  {
+   "event_id": "flood-2025-10-30",
+   "nws_event": "ffw-2025-10-30",
+   "window": "evt-2025-10-30",
+   "tier": "ambiguous",
+   "hypothesis": null,
+   "first_nyc_warning_local": "2025-10-30T15:27:00",
+   "nws_products": 1,
+   "boroughs": [
+    "Bronx",
+    "Kings",
+    "New York",
+    "Queens"
+   ],
+   "peak60_mm": 33.8,
+   "onset_local": null,
+   "critical_local": null,
+   "sources": [
+    {
+     "url": "https://mesonet.agron.iastate.edu/cgi-bin/afos/retrieve.py?pil=FFWOKX&limit=9999&sdate=2025-10-30T00:00Z&edate=2025-11-01T00:00Z&fmt=text",
+     "what": "IEM archive of NWS OKX flash flood warning products: 1 product(s) naming NYC counties, first issued 2025-10-30T15:27:00 local; no flash flood EMERGENCY for NYC."
+    }
+   ],
+   "confidence": "low: one NWS flash flood warning naming four boroughs; web results for this date were mixed up with other 2025 storms, so no impact claim is made."
+  },
+  {
+   "event_id": "flood-2023-07-18",
+   "nws_event": "ffw-2023-07-18",
+   "window": "evt-2023-07-18",
+   "tier": "ambiguous",
+   "hypothesis": null,
+   "first_nyc_warning_local": "2023-07-18T13:46:00",
+   "nws_products": 1,
+   "boroughs": [
+    "Queens"
+   ],
+   "peak60_mm": 32,
+   "onset_local": null,
+   "critical_local": null,
+   "sources": [
+    {
+     "url": "https://mesonet.agron.iastate.edu/cgi-bin/afos/retrieve.py?pil=FFWOKX&limit=9999&sdate=2023-07-18T00:00Z&edate=2023-07-20T00:00Z&fmt=text",
+     "what": "IEM archive of NWS OKX flash flood warning products: 1 product(s) naming NYC counties, first issued 2023-07-18T13:46:00 local; no flash flood EMERGENCY for NYC."
+    }
+   ],
+   "confidence": "low: one NWS flash flood warning, naming Queens only; no impact source was looked up."
+  }
+ ]
+}

@@ -14,7 +14,7 @@
 
 import { loadJson } from "./load";
 import { boardOfEmsCode, type RealZone, zoneIdOfBoard } from "./geo";
-import { DOT_OK_STATUS, MIN_BASELINE_SAMPLES } from "./params";
+import { DOT_OK_STATUS, LINK_HEALTH, MIN_BASELINE_SAMPLES } from "./params";
 import { localIsoToUtcMs } from "./tz";
 
 export interface Baselines {
@@ -64,6 +64,20 @@ export function buildBaselines(dryDays: string[], zones: Pick<RealZone, "zone_id
     calls: new Map([...calls].map(([k, v]) => [k, v / n])),
     hospital: new Map([...hospital].map(([k, v]) => [k, v / n])),
   };
+}
+
+// Which links are healthy sources? Counted on the dry control days only (leave-one-day-out for a dry episode).
+// Returns the link ids that sent >= LINK_HEALTH.min_valid valid reports on >= LINK_HEALTH.day_share of those days.
+export function healthyLinks(dryDays: string[], leaveOut?: string): Set<string> {
+  const days = dryDays.filter((d) => d !== leaveOut);
+  const healthyDays = new Map<string, number>();
+  for (const day of days) {
+    const valid = new Map<string, number>();
+    for (const r of loadJson("dot-speeds", `dry-${day}`)) if (speedOf(r) !== undefined) valid.set(r.link_id, (valid.get(r.link_id) ?? 0) + 1);
+    for (const [link, n] of valid) if (n >= LINK_HEALTH.min_valid) healthyDays.set(link, (healthyDays.get(link) ?? 0) + 1);
+  }
+  const need = Math.ceil(LINK_HEALTH.day_share * days.length);
+  return new Set([...healthyDays].filter(([, n]) => n >= need).map(([link]) => link));
 }
 
 export function baselineSpeed(b: Baselines, linkId: string, hour: number): number | undefined {

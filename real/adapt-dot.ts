@@ -26,6 +26,7 @@ export function adaptDot(
   fromMs: number,
   toMs: number,
   unmapped: Unmapped,
+  healthy?: Set<string>, // Phase 8: links that are real sources; others are not registered
 ): Obs[] {
   const out: Obs[] = [];
   for (const r of rows) {
@@ -34,6 +35,10 @@ export function adaptDot(
     const zone = linkZone.get(r.link_id);
     if (!zone) {
       unmapped.add("dot: link has no zone (no coordinates, or more than 6 km from every zone centroid)");
+      continue;
+    }
+    if (healthy && !healthy.has(r.link_id)) {
+      unmapped.add("dot: link not registered (it did not report on enough dry control days)");
       continue;
     }
     const speed = speedOf(r);

@@ -12,13 +12,13 @@
 import { readFileSync } from "node:fs";
 import { join } from "node:path";
 import type { Episode } from "../sim/truth";
-import { buildBaselines, type Baselines } from "./baselines";
+import { buildBaselines, healthyLinks, type Baselines } from "./baselines";
 import { type Context, observe, windowOf } from "./context";
 import { loadIem } from "./load";
 import { finalize, seedOf, Unmapped } from "./obs";
 import { CASCADE_WINDOWS, DRY_EPISODE_START_HOURS, EPISODE_S, OFFSETS_MIN, RAIN_LEAD_IN_S } from "./params";
 import { rainBuckets } from "./adapt-rain";
-import { STATIONS } from "./registry";
+import { buildRegistry, STATIONS } from "./registry";
 import { addDays, localIsoToUtcMs, utcMsToLocalIso, utcStringToMs } from "./tz";
 
 export interface Labels {
@@ -39,6 +39,14 @@ export interface Labels {
 }
 
 export const loadLabels = (): Labels => JSON.parse(readFileSync(join(process.cwd(), "real", "labels.json"), "utf8"));
+
+// Phase 8 events (real/labels-p8.json): same shape plus a tier.
+export interface Labels8 {
+  start_rule: string;
+  offsets_min: number[];
+  events: { event_id: string; window: string; tier: "cascade" | "ambiguous"; hypothesis: string | null; first_nyc_warning_local: string; onset_local: string | null; critical_local: string | null; sources: { url: string; what: string }[]; confidence: string }[];
+}
+export const loadLabels8 = (): Labels8 => JSON.parse(readFileSync(join(process.cwd(), "real", "labels-p8.json"), "utf8"));
 
 // The start (UTC ms) of the heaviest `minutes` of rain in a window's IEM rows, over the 3 stations.
 // A candidate window needs at least 80% valid minutes. Ties go to the earliest.
@@ -71,6 +79,7 @@ export function heaviestRain(rows: Record<string, string>[], minutes: number): n
 }
 
 export interface BuiltEpisode {
+  tier: "cascade" | "ambiguous" | "control"; // ambiguous = watched, never scored (no cited cascade-class impact)
   episode: Episode;
   startMs: number;
   startLocal: string;
@@ -90,10 +99,12 @@ function makeEpisode(
     criticalMs?: number;
     base: Baselines;
     unmapped: Unmapped;
+    tier?: "cascade" | "ambiguous";
+    healthy?: Set<string>; // DOT links registered as sources (undefined = every link, the Phase 7 behaviour)
     label: Record<string, unknown>;
   },
 ): BuiltEpisode {
-  const obs = observe(ctx, o.windowId, o.startMs, o.startMs + EPISODE_S * 1000, o.base, o.unmapped);
+  const obs = observe(ctx, o.windowId, o.startMs, o.startMs + EPISODE_S * 1000, o.base, o.unmapped, o.healthy);
   const events = finalize(obs, o.id, o.startMs);
   const truth: Record<string, unknown> = {
     hypothesis: o.hypothesis,
@@ -119,19 +130,25 @@ function makeEpisode(
     seed: seedOf(o.id),
     type: o.type,
     duration: EPISODE_S,
-    registry: ctx.registry,
+    registry: o.healthy ? buildRegistry(ctx.zones, ctx.links, o.healthy) : ctx.registry,
     events,
     truth,
     real: { window: o.windowId, start_local: utcMsToLocalIso(o.startMs), start_utc: new Date(o.startMs).toISOString(), ...o.label },
   } as unknown as Episode;
-  return { episode, startMs: o.startMs, startLocal: utcMsToLocalIso(o.startMs), counts };
+  return { tier: o.tier ?? "control", episode, startMs: o.startMs, startLocal: utcMsToLocalIso(o.startMs), counts };
 }
 
-export function buildAll(ctx: Context, unmapped: Unmapped): BuiltEpisode[] {
+export interface BuildOptions {
+  phase8Events?: boolean; // add the Phase 8 events (real/labels-p8.json); false reproduces the Phase 7 episode set
+  registry: "all" | "healthy"; // all = Phase 7 (every DOT link); healthy = Phase 8 (only links that report on normal days)
+}
+
+export function buildAll(ctx: Context, unmapped: Unmapped, opts: BuildOptions = { registry: "healthy" }): BuiltEpisode[] {
   const labels = loadLabels();
   const out: BuiltEpisode[] = [];
   const dry = ctx.controls.dry;
   const allDry = buildBaselines(dry, ctx.zones);
+  const healthyAll = opts.registry === "healthy" ? healthyLinks(dry) : undefined;
 
   // ---- cascades ----
   for (const c of labels.cascades) {
@@ -150,9 +167,35 @@ export function buildAll(ctx: Context, unmapped: Unmapped): BuiltEpisode[] {
           criticalMs: c.critical_local ? localIsoToUtcMs(c.critical_local) : undefined,
           base: allDry,
           unmapped,
+          tier: "cascade",
+          healthy: healthyAll,
           label: { event: c.event_id, offset_min: off, anchor: onsetMs !== undefined ? "onset_local (NWS flash flood emergency)" : "heaviest 60 min of rain (data-derived anchor, not an onset)", onset_local: c.onset_local, critical_local: c.critical_local, confidence: c.confidence, onset_source: c.onset_source, critical_source: c.critical_source },
         }),
       );
+    }
+  }
+
+  // ---- Phase 8 events: tier cascade is scored, tier ambiguous is only watched ----
+  if (opts.phase8Events) {
+    const l8 = loadLabels8();
+    for (const ev of l8.events) {
+      const anchorMs = heaviestRain(loadIem(ev.window), 60);
+      for (const off of l8.offsets_min) {
+        out.push(
+          makeEpisode(ctx, {
+            id: `real-${ev.event_id}-on${off}`,
+            windowId: ev.window,
+            startMs: anchorMs - off * 60_000,
+            type: "cascade",
+            hypothesis: ev.hypothesis ?? "UNLABELLED",
+            tier: ev.tier,
+            base: allDry,
+            unmapped,
+            healthy: healthyAll,
+            label: { event: ev.event_id, offset_min: off, tier: ev.tier, anchor: "heaviest 60 min of rain (data-derived anchor, not an onset)", onset_local: ev.onset_local, critical_local: ev.critical_local, confidence: ev.confidence, sources: ev.sources },
+          }),
+        );
+      }
     }
   }
 
@@ -165,7 +208,7 @@ export function buildAll(ctx: Context, unmapped: Unmapped): BuiltEpisode[] {
     const peak = heaviestRain(loadIem(w), 30);
     const startMs = Math.min(dayEnd - EPISODE_S * 1000, Math.max(dayStart, peak - RAIN_LEAD_IN_S * 1000));
     out.push(
-      makeEpisode(ctx, { id: `real-rain-${day}`, windowId: w, startMs, type: "lookalike", hypothesis: rc.hypothesis, lookalike: rc.lookalike_type, base: allDry, unmapped, label: { event: w, anchor: "heaviest 30 min of rain", confidence: rc.confidence, source: rc.source, ffw: ctx.controls.ffw[day] } }),
+      makeEpisode(ctx, { id: `real-rain-${day}`, windowId: w, startMs, type: "lookalike", hypothesis: rc.hypothesis, lookalike: rc.lookalike_type, base: allDry, unmapped, healthy: healthyAll, label: { event: w, anchor: "heaviest 30 min of rain", confidence: rc.confidence, source: rc.source, ffw: ctx.controls.ffw[day] } }),
     );
   }
 
@@ -173,10 +216,11 @@ export function buildAll(ctx: Context, unmapped: Unmapped): BuiltEpisode[] {
   const dc = labels.controls.dry;
   for (const day of dry) {
     const base = buildBaselines(dry, ctx.zones, day);
+    const healthy = opts.registry === "healthy" ? healthyLinks(dry, day) : undefined; // leave-one-day-out, like the baseline
     for (const h of DRY_EPISODE_START_HOURS) {
       const hh = String(h).padStart(2, "0");
       out.push(
-        makeEpisode(ctx, { id: `real-dry-${day}-${hh}00`, windowId: windowOf(ctx, day, CASCADE_WINDOWS), startMs: localIsoToUtcMs(`${day}T${hh}:00:00`), type: "noise", hypothesis: dc.hypothesis, base, unmapped, label: { event: `dry-${day}`, anchor: `${hh}:00 local`, confidence: dc.confidence, source: dc.source, baseline_days: base.days } }),
+        makeEpisode(ctx, { id: `real-dry-${day}-${hh}00`, windowId: windowOf(ctx, day, CASCADE_WINDOWS), startMs: localIsoToUtcMs(`${day}T${hh}:00:00`), type: "noise", hypothesis: dc.hypothesis, base, unmapped, healthy, label: { event: `dry-${day}`, anchor: `${hh}:00 local`, confidence: dc.confidence, source: dc.source, baseline_days: base.days } }),
       );
     }
   }

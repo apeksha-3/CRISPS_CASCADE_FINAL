@@ -13,6 +13,9 @@
 //                                            WEAK PROXY: it is a building wiring complaint, not grid load or an outage.
 //   anything else (hydrants, leaks, odor, ...) -> unmapped, counted by reason.
 // 311 has no severity field and none is invented: reported_severity stays absent.
+// NYC renamed the sewer and water types in early 2026 (Sewer Maintenance: Flooding on Street, Backup, Catch Basin Clogged...;
+// Water Maintenance: Water in Basement); the new names map to the same kinds. The 2026 HPD electric type was not looked for,
+// so the power proxy may be missing in 2026 windows.
 // The legacy names in the brief ("Catch Basin", "Street Flooding", "Flooded Basement" as
 // complaint types) are handled too, in case the portal ever uses them.
 
@@ -25,6 +28,10 @@ type Mapping = { kind: "citizen_report" | "drainage_anomaly" | "power_comms_load
 export function map311(complaint: string, descriptor: string): Mapping | undefined {
   const c = complaint.trim().toLowerCase();
   const d = descriptor.trim().toLowerCase();
+  // 2026 taxonomy (the same real-world problems under new names)
+  if (c === "sewer maintenance" && /flooding on street|flooding on highway/.test(d)) return { kind: "citizen_report", type: "citizen_report", label: "street flooding" };
+  if (c === "water maintenance" && /water in basement/.test(d)) return { kind: "citizen_report", type: "citizen_report", label: "flooded basement" };
+  if (c === "sewer maintenance" && /catch basin clogged|manhole overflow|backup|culvert/.test(d)) return { kind: "drainage_anomaly", type: "citizen_report", label: "drainage problem" };
   if (c === "electric") return { kind: "power_comms_load", type: "utility", label: "electric complaint (weak power proxy)" };
   if (c === "street flooding" || (c === "sewer" && /street flooding|highway flooding|rain garden flooding/.test(d))) return { kind: "citizen_report", type: "citizen_report", label: "street flooding" };
   if (c === "flooded basement" || (c === "water system" && /excessive water in basement/.test(d))) return { kind: "citizen_report", type: "citizen_report", label: "flooded basement" };

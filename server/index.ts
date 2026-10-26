@@ -6,6 +6,9 @@
 //                                             (default: the engine knob FILTER_KNOBS.degraded_below_coverage, 0.5)
 //   GET  /api/twin?split=&twin=&speed=         SSE: both twins in lockstep: tick-left, tick-right, split
 //   GET  /api/prior-shift?speed=               SSE: episode-summary after each of the 100 episodes
+//   GET  /api/simple/replay?split=&episode=    SSE: the same replay with a plain-language view per tick (dashboard Layers 1 and 2)
+//   GET  /api/nowcast/events                   the 3 real events and the nowcast's calibration report
+//   GET  /api/nowcast/replay?event=&speed=     SSE: ML nowcast mode, one of the 3 real events through the exported models
 //   GET  /api/eval?split=                      the eval table (same numbers as `npm run eval`)
 //   POST /api/replay/pause | resume | step     control open streams (?id=<stream id>, default: all)
 //   POST /api/replay/speed?speed=
@@ -21,9 +24,11 @@ import { DRIFT_KNOBS } from "../config/priors";
 import { groupOf, type Split } from "../sim/dataset";
 import { evalView } from "./eval-cache";
 import { isSplit, loadEpisode, loadTwinPair } from "./episodes";
+import { calibrationReport, eventSummary, nowcastTick, runtime } from "./nowcast";
 import { priorShiftRun } from "./prior-shift";
 import { EpisodeRunner, truthReveal } from "./runner";
 import { SCENARIOS } from "./scenarios";
+import { SimpleBuilder } from "./simple";
 import { newPlayer, openSse, parseSpeed, targets } from "./stream";
 
 const str = (x: unknown) => (typeof x === "string" ? x : "");
@@ -75,6 +80,54 @@ async function replay(req: Request, res: Response): Promise<void> {
     send("tick", runner.next());
   }
   if (!player.closed) send("episode-end", truthReveal(ep, groupOf(ep)));
+  res.end();
+}
+
+// The same replay as /api/replay, with a plain-language `view` added to every tick (Layers 1 and 2 of the dashboard).
+async function simpleReplay(req: Request, res: Response): Promise<void> {
+  const split = splitOf(req, res);
+  if (!split) return;
+  let ep;
+  try {
+    ep = loadEpisode(split, str(req.query.episode));
+  } catch (e) {
+    res.status(404).json({ error: (e as Error).message });
+    return;
+  }
+  const degradedBelow = degradedThreshold(req, res);
+  if (degradedBelow === null) return;
+  const runner = new EpisodeRunner(ep, { degradedBelow });
+  const builder = new SimpleBuilder(ep.registry);
+  const send = openSse(res);
+  const player = newPlayer(req, res, parseSpeed(req.query.speed), req.query.paused === "1");
+  send("episode-start", { ...episodeStart(ep, split, { stream_id: player.id }), mode: "rules" });
+  while (!runner.done() && !player.closed) {
+    await player.gate();
+    if (player.closed) break;
+    const tick = runner.next();
+    send("tick", { minute: tick.minute, view: builder.view(tick, runner.engine) }); // no probabilities leave the server on this endpoint
+  }
+  if (!player.closed) send("episode-end", truthReveal(ep, groupOf(ep)));
+  res.end();
+}
+
+// ML nowcast mode: one of three real events, replayed tick by tick (5 minutes of real time per tick) through the exported models.
+async function nowcastReplay(req: Request, res: Response): Promise<void> {
+  const rt = runtime();
+  const ev = rt.events.find((e) => e.id === str(req.query.event));
+  if (!ev) {
+    res.status(404).json({ error: `unknown event ${str(req.query.event)}` });
+    return;
+  }
+  const send = openSse(res);
+  const player = newPlayer(req, res, parseSpeed(req.query.speed), req.query.paused === "1");
+  send("episode-start", { ...eventSummary(rt, ev), stream_id: player.id, mode: "nowcast" });
+  for (let i = 0; i < ev.ticks.length && !player.closed; i++) {
+    await player.gate();
+    if (player.closed) break;
+    send("tick", nowcastTick(rt, ev, i));
+  }
+  if (!player.closed) send("episode-end", eventSummary(rt, ev));
   res.end();
 }
 
@@ -148,6 +201,16 @@ export function createApp(): express.Express {
     res.json(SCENARIOS);
   });
   app.get("/api/replay", (req, res) => void replay(req, res));
+  app.get("/api/simple/replay", (req, res) => void simpleReplay(req, res));
+  app.get("/api/nowcast/events", (_req, res) => {
+    try {
+      const rt = runtime();
+      res.json({ events: rt.events.map((e) => eventSummary(rt, e)), calibration: calibrationReport(rt) });
+    } catch (e) {
+      res.status(500).json({ error: (e as Error).message });
+    }
+  });
+  app.get("/api/nowcast/replay", (req, res) => void nowcastReplay(req, res));
   app.get("/api/twin", (req, res) => void twin(req, res));
   app.get("/api/prior-shift", (req, res) => void priorShift(req, res));
   app.get("/api/eval", (req, res) => {

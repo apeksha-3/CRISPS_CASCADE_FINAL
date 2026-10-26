@@ -708,6 +708,7 @@ function initTheme() {
     try { localStorage.setItem("f10m-theme", next); } catch { /* ignore */ }
     render();
   });
+  $("theme2").addEventListener("click", () => $("theme").click());
 }
 
 async function init() {
@@ -771,6 +772,7 @@ async function init() {
   $("p-chart").addEventListener("mouseleave", () => { P.hover = null; $("p-tip").classList.add("hidden"); renderShift(); });
 
   document.addEventListener("keydown", (e) => {
+    if (document.body.dataset.view !== "technical" || document.body.dataset.mode !== "rules") return; // the simple view has its own keys
     if (e.target.tagName === "SELECT" || e.target.tagName === "INPUT") return;
     if (e.key === " ") { e.preventDefault(); app.es && !app.paused ? pause() : play(); }
     else if (e.key === "ArrowRight") { e.preventDefault(); step(); }

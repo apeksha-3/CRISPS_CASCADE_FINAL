@@ -104,7 +104,7 @@ describe("no leakage in the tick data set", () => {
 
 describe("firewall: the engine does not import ml/", () => {
   const tsFiles = (dir: string): string[] => readdirSync(dir).flatMap((f) => (statSync(join(dir, f)).isDirectory() ? tsFiles(join(dir, f)) : f.endsWith(".ts") ? [join(dir, f)] : []));
-  it("no engine, config, sim or eval file imports ml/ (the model is not wired in)", () => {
-    for (const d of ["engine", "config", "sim", "eval", "server"]) for (const file of tsFiles(join(__dirname, "..", d))) expect(readFileSync(file, "utf8"), file).not.toMatch(/from\s+["'][^"']*\bml(\/|["'])/);
+  it("no engine, config, sim or eval file imports ml/ (the model is not wired into the engine; since Phase 10 only the dashboard server reads it)", () => {
+    for (const d of ["engine", "config", "sim", "eval"]) for (const file of tsFiles(join(__dirname, "..", d))) expect(readFileSync(file, "utf8"), file).not.toMatch(/from\s+["'][^"']*\bml(\/|["'])/);
   });
 });

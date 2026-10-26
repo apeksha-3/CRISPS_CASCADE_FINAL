@@ -14,6 +14,7 @@ import { parseCsv } from "../../real/csv";
 import { assignGateways, buildNeighbours, isRealBoard, type RealZone, zoneIdOfBoard } from "../../real/geo";
 import { type ManifestEntry, saveRaw, writeManifest } from "../../real/manifest";
 import { cachedGet } from "../../real/net";
+import { fetchWindow, type Win } from "../../real/fetchwin";
 import { CASCADE_WINDOWS, EMS_LOOKBACK_S, LINK_MAX_KM, RANGE, ZONE_COUNT } from "../../real/params";
 import { type Daily, MIN_DOT_ROWS, parseDaily, pickDry, pickRain, rainCandidates } from "../../real/select";
 import { fetchAggregate, fetchRows } from "../../real/soda";
@@ -135,49 +136,7 @@ function zonesDoc(rain: string[], dry: string[], zones: RealZone[], ffw: Record<
   return L.join("\n");
 }
 
-// ---------- 3. datasets per window ----------
-interface Win {
-  id: string;
-  kind: "cascade" | "rain" | "dry";
-  from: string; // local date
-  to: string; // local date, exclusive
-}
-
-const COMPLAINTS = ["Sewer", "Catch Basin", "Street Flooding", "Flooded Basement", "Water System", "Electric", "ELECTRIC"];
-
-async function fetchWindow(w: Win): Promise<void> {
-  const from = `${w.from}T00:00:00`;
-  const to = `${w.to}T00:00:00`;
-  const save = (dataset: string, ext: string, content: string, query: string, rows: number) =>
-    note(saveRaw(`${dataset}__${w.id}.${ext}`, content, { dataset, window: w.id, query, rows }));
-  const soda = async (dataset: string, id: string, select: string, where: string, order: string) => {
-    const r = await fetchRows(`${dataset}-${w.id}`, id, { select, where, order });
-    save(dataset, "json", JSON.stringify(r.rows), r.queryText, r.rows.length);
-  };
-
-  await soda("311", "erm2-nwe9", "unique_key,created_date,complaint_type,descriptor,community_board,borough,latitude,longitude",
-    `created_date >= '${from}' AND created_date < '${to}' AND complaint_type in (${COMPLAINTS.map((c) => `'${c}'`).join(",")})`, "created_date,unique_key");
-  await soda("dot-speeds", "i4gi-tjb9", "id,speed,travel_time,status,data_as_of,link_id",
-    `data_as_of >= '${from}' AND data_as_of < '${to}'`, "data_as_of,id");
-  await soda("collisions", "h9gi-nx95", "collision_id,crash_date,crash_time,borough,latitude,longitude,number_of_persons_injured,number_of_persons_killed",
-    `crash_date >= '${from}' AND crash_date < '${to}'`, "crash_date,collision_id");
-  const emsFrom = utcMsToLocalIso(localIsoToUtcMs(from) - EMS_LOOKBACK_S * 1000);
-  await soda("ems", "76xm-jjuj", "incident_id,incident_datetime,initial_severity_level_code,first_hosp_arrival_datetime,communitydistrict,borough",
-    `incident_datetime >= '${emsFrom}' AND incident_datetime < '${to}'`, "incident_datetime,incident_id");
-
-  const sts = utcMsToIemZ(localIsoToUtcMs(from));
-  const ets = utcMsToIemZ(localIsoToUtcMs(to));
-  const iemUrl = `https://mesonet.agron.iastate.edu/cgi-bin/request/asos1min.py?station=NYC&station=JFK&station=LGA&vars=precip&sts=${encodeURIComponent(sts)}&ets=${encodeURIComponent(ets)}&sample=1min&what=download&delim=comma&tz=UTC`;
-  const iem = await text(`iem1min-${w.id}`, iemUrl);
-  save("iem-rain", "csv", iem, iemUrl, parseCsv(iem).length);
-
-  // NOAA ISD hourly: cross-check only, for the cascade windows
-  if (w.kind === "cascade") {
-    const isdUrl = `https://www.ncei.noaa.gov/access/services/data/v1?dataset=global-hourly&stations=72505394728,74486094789,72503014732&startDate=${w.from}&endDate=${addDays(w.to, -1)}&format=json&includeAttributes=false`;
-    const isd = await text(`isd-${w.id}`, isdUrl);
-    save("isd-hourly", "json", isd, isdUrl, (JSON.parse(isd) as unknown[]).length);
-  }
-}
+// ---------- 3. datasets per window (shared with scripts/real/fetch8.ts) ----------
 
 async function fetchLinks(): Promise<void> {
   // The DOT link table (where each link is): one query for the whole Ida day, grouped by link.
@@ -206,7 +165,7 @@ async function main() {
     ...dry.map((d) => ({ id: `dry-${d}`, kind: "dry" as const, from: d, to: addDays(d, 1) })),
   ];
   for (const w of wins) {
-    await fetchWindow(w);
+    await fetchWindow(w, note);
     console.log(`fetched ${w.id}`);
   }
   writeManifest(entries);

@@ -1,0 +1,123 @@
+# Step A: registry fix, same 34 Phase 7 episodes, same engine. 311 taxonomy fix applied to BOTH arms.
+
+## ARM 1: every DOT link registered (Phase 7 behaviour), harness mode
+split real-p7, 34 episodes, 20 events, mode harness
+policy            Brier LogLoss Cost/tick FalseAlarm  cascade ALERT+  meanP(S)  meanP(C) casc  maxP(C) casc
+engine            0.777   1.457      7.45       0.0%             0/6     0.354          0.044         0.092
+count-threshold   0.341   0.772     11.00       0.0%             3/6     0.120          0.075         0.235
+always-watch      0.434   0.899     12.34       0.0%             0/6     0.150          0.100         0.100
+Per class (episodes in the class, independent events in brackets)
+  engine
+    cascade      6 episodes [ 2 events]  Brier 1.345  ALERT+ 0.0%  mean P(S) 0.255   <- fewer than 5 independent events: not statistically meaningful
+    noise       20 episodes [10 events]  Brier 0.632  ALERT+ 0.0%  mean P(S) 0.375
+    rain_only    4 episodes [ 4 events]  Brier 0.793  ALERT+ 0.0%  mean P(S) 0.460   <- fewer than 5 independent events: not statistically meaningful
+    rain_only+FFW   4 episodes [ 4 events]  Brier 0.636  ALERT+ 0.0%  mean P(S) 0.290   <- fewer than 5 independent events: not statistically meaningful
+  count-threshold
+    cascade      6 episodes [ 2 events]  Brier 1.350  ALERT+ 50.0%  mean P(S) 0.121   <- fewer than 5 independent events: not statistically meaningful
+    noise       20 episodes [10 events]  Brier 0.122  ALERT+ 0.0%  mean P(S) 0.120
+    rain_only    4 episodes [ 4 events]  Brier 0.122  ALERT+ 0.0%  mean P(S) 0.120   <- fewer than 5 independent events: not statistically meaningful
+    rain_only+FFW   4 episodes [ 4 events]  Brier 0.137  ALERT+ 0.0%  mean P(S) 0.121   <- fewer than 5 independent events: not statistically meaningful
+  always-watch
+    cascade      6 episodes [ 2 events]  Brier 1.175  ALERT+ 0.0%  mean P(S) 0.150   <- fewer than 5 independent events: not statistically meaningful
+    noise       20 episodes [10 events]  Brier 0.275  ALERT+ 0.0%  mean P(S) 0.150
+    rain_only    4 episodes [ 4 events]  Brier 0.275  ALERT+ 0.0%  mean P(S) 0.150   <- fewer than 5 independent events: not statistically meaningful
+    rain_only+FFW   4 episodes [ 4 events]  Brier 0.275  ALERT+ 0.0%  mean P(S) 0.150   <- fewer than 5 independent events: not statistically meaningful
+    SENSOR_FAILURE: 0 episodes, 0 events (empty class)
+    ISOLATED_INCIDENT: 0 episodes, 0 events (empty class)
+Per event, cascade events only (policy: Brier / max action / ALERT+ episodes / mean P(S) / max P(C))
+event                  engine                             count-threshold                    always-watch                      
+flood-2023             1.32 PREPARE  0/3 S0.12 C0.10      1.34 ALERT    1/3 S0.12 C0.35      1.17 WATCH    0/3 S0.15 C0.10     
+ida-2021               1.37 PREPARE  0/3 S0.39 C0.10      1.36 ALERT    2/3 S0.12 C0.35      1.17 WATCH    0/3 S0.15 C0.10     
+Cascade episodes, actions by episode minute (W/P/A/E start-end)
+  engine
+    real-flood-2023-on30           W1-1 P2-45   max P(C) 0.076
+    real-flood-2023-on10           W1-1 P2-45   max P(C) 0.104
+    real-ida-2021-on30             W1-1 P2-23 W24-45   max P(C) 0.083
+    real-ida-2021-on10             W1-1 P2-28 W29-45   max P(C) 0.103
+    real-flood-2023-on20           W1-1 P2-45   max P(C) 0.086
+    real-ida-2021-on20             W1-1 P2-23 W24-28 P29-32 W33-45   max P(C) 0.100
+  count-threshold
+    real-flood-2023-on30           W1-35 P36-36 W37-41 P42-42 W43-45   max P(C) 0.150
+    real-flood-2023-on10           W1-15 P16-16 W17-21 P22-22 W23-35 P36-40 A41-45   max P(C) 0.350
+    real-ida-2021-on30             W1-45   max P(C) 0.060
+    real-ida-2021-on10             W1-28 A29-30 P31-33 W34-45   max P(C) 0.350
+    real-flood-2023-on20           W1-25 P26-26 W27-31 P32-32 W33-45   max P(C) 0.150
+    real-ida-2021-on20             W1-38 A39-40 P41-43 W44-45   max P(C) 0.350
+  always-watch
+    real-flood-2023-on30           W1-45   max P(C) 0.100
+    real-flood-2023-on10           W1-45   max P(C) 0.100
+    real-ida-2021-on30             W1-45   max P(C) 0.100
+    real-ida-2021-on10             W1-45   max P(C) 0.100
+    real-flood-2023-on20           W1-45   max P(C) 0.100
+    real-ida-2021-on20             W1-45   max P(C) 0.100
+
+## ARM 2: only links that report on >=70% of dry days registered, harness mode
+split real-p7h, 34 episodes, 20 events, mode harness
+policy            Brier LogLoss Cost/tick FalseAlarm  cascade ALERT+  meanP(S)  meanP(C) casc  maxP(C) casc
+engine            0.536   1.117      4.03       0.0%             0/6     0.151          0.048         0.094
+count-threshold   0.342   0.776     11.39       0.0%             3/6     0.120          0.072         0.235
+always-watch      0.434   0.899     12.34       0.0%             0/6     0.150          0.100         0.100
+Per class (episodes in the class, independent events in brackets)
+  engine
+    cascade      6 episodes [ 2 events]  Brier 1.334  ALERT+ 0.0%  mean P(S) 0.110   <- fewer than 5 independent events: not statistically meaningful
+    noise       20 episodes [10 events]  Brier 0.324  ALERT+ 0.0%  mean P(S) 0.142
+    rain_only    4 episodes [ 4 events]  Brier 0.485  ALERT+ 0.0%  mean P(S) 0.275   <- fewer than 5 independent events: not statistically meaningful
+    rain_only+FFW   4 episodes [ 4 events]  Brier 0.448  ALERT+ 0.0%  mean P(S) 0.137   <- fewer than 5 independent events: not statistically meaningful
+  count-threshold
+    cascade      6 episodes [ 2 events]  Brier 1.363  ALERT+ 50.0%  mean P(S) 0.121   <- fewer than 5 independent events: not statistically meaningful
+    noise       20 episodes [10 events]  Brier 0.122  ALERT+ 0.0%  mean P(S) 0.120
+    rain_only    4 episodes [ 4 events]  Brier 0.122  ALERT+ 0.0%  mean P(S) 0.120   <- fewer than 5 independent events: not statistically meaningful
+    rain_only+FFW   4 episodes [ 4 events]  Brier 0.127  ALERT+ 0.0%  mean P(S) 0.120   <- fewer than 5 independent events: not statistically meaningful
+  always-watch
+    cascade      6 episodes [ 2 events]  Brier 1.175  ALERT+ 0.0%  mean P(S) 0.150   <- fewer than 5 independent events: not statistically meaningful
+    noise       20 episodes [10 events]  Brier 0.275  ALERT+ 0.0%  mean P(S) 0.150
+    rain_only    4 episodes [ 4 events]  Brier 0.275  ALERT+ 0.0%  mean P(S) 0.150   <- fewer than 5 independent events: not statistically meaningful
+    rain_only+FFW   4 episodes [ 4 events]  Brier 0.275  ALERT+ 0.0%  mean P(S) 0.150   <- fewer than 5 independent events: not statistically meaningful
+    SENSOR_FAILURE: 0 episodes, 0 events (empty class)
+    ISOLATED_INCIDENT: 0 episodes, 0 events (empty class)
+Per event, cascade events only (policy: Brier / max action / ALERT+ episodes / mean P(S) / max P(C))
+event                  engine                             count-threshold                    always-watch                      
+flood-2023             1.35 PREPARE  0/3 S0.06 C0.10      1.35 ALERT    1/3 S0.12 C0.35      1.17 WATCH    0/3 S0.15 C0.10     
+ida-2021               1.32 PREPARE  0/3 S0.16 C0.11      1.38 ALERT    2/3 S0.12 C0.35      1.17 WATCH    0/3 S0.15 C0.10     
+Cascade episodes, actions by episode minute (W/P/A/E start-end)
+  engine
+    real-flood-2023-on30           W1-1 P2-45   max P(C) 0.085
+    real-flood-2023-on10           W1-1 P2-45   max P(C) 0.104
+    real-ida-2021-on30             W1-1 P2-23 W24-38 P39-45   max P(C) 0.083
+    real-ida-2021-on10             W1-1 P2-45   max P(C) 0.106
+    real-flood-2023-on20           W1-1 P2-45   max P(C) 0.086
+    real-ida-2021-on20             W1-1 P2-23 W24-26 P27-45   max P(C) 0.100
+  count-threshold
+    real-flood-2023-on30           W1-35 P36-36 W37-45   max P(C) 0.150
+    real-flood-2023-on10           W1-15 P16-16 W17-36 P37-40 A41-45   max P(C) 0.350
+    real-ida-2021-on30             W1-45   max P(C) 0.060
+    real-ida-2021-on10             W1-28 P29-29 A30-30 P31-32 W33-45   max P(C) 0.350
+    real-flood-2023-on20           W1-25 P26-26 W27-45   max P(C) 0.150
+    real-ida-2021-on20             W1-38 P39-39 A40-40 W41-42 P43-43 W44-45   max P(C) 0.350
+  always-watch
+    real-flood-2023-on30           W1-45   max P(C) 0.100
+    real-flood-2023-on10           W1-45   max P(C) 0.100
+    real-ida-2021-on30             W1-45   max P(C) 0.100
+    real-ida-2021-on10             W1-45   max P(C) 0.100
+    real-flood-2023-on20           W1-45   max P(C) 0.100
+    real-ida-2021-on20             W1-45   max P(C) 0.100
+
+## ARM 1, leave-one-event-out
+split real-p7, 34 episodes, 20 events, mode loeo
+
+policy            Brier LogLoss Cost/tick FalseAlarm  cascade ALERT+  meanP(S)  meanP(C) casc  maxP(C) casc
+engine            0.768   1.429      7.65       0.0%             0/6     0.380          0.049         0.098
+engine-frozen     0.841   1.599      9.63       0.0%             0/6     0.300          0.034         0.082
+
+Per class (episodes in the class, independent events in brackets)
+  engine
+
+## ARM 2, leave-one-event-out
+split real-p7h, 34 episodes, 20 events, mode loeo
+
+policy            Brier LogLoss Cost/tick FalseAlarm  cascade ALERT+  meanP(S)  meanP(C) casc  maxP(C) casc
+engine            0.489   1.031      3.78       0.0%             0/6     0.161          0.056         0.100
+engine-frozen     0.694   1.371      9.49       0.0%             0/6     0.128          0.033         0.085
+
+Per class (episodes in the class, independent events in brackets)
+  engine

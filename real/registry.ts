@@ -57,7 +57,7 @@ export function stationZones(zones: RealZone[]): Record<keyof typeof STATIONS, s
   return out;
 }
 
-export function buildRegistry(zones: RealZone[], links: Record<string, string>[]): RealRegistry {
+export function buildRegistry(zones: RealZone[], links: Record<string, string>[], healthy?: Set<string>): RealRegistry {
   const gw = new Map(zones.map((z) => [z.zone_id, z.gateway_id]));
   const sources: SourceRegistryEntry[] = [];
   const add = (source_id: string, source_type: SourceType, zone_id: string, interval: number, gateway = false) => {
@@ -68,7 +68,7 @@ export function buildRegistry(zones: RealZone[], links: Record<string, string>[]
   const sz = stationZones(zones);
   for (const [k, s] of Object.entries(STATIONS)) add(s.id, "rain_gauge", sz[k as keyof typeof STATIONS], HEARTBEAT_S.rain_gauge, true);
   const { mapped } = linkZones(links, zones);
-  for (const [id, z] of [...mapped.entries()].sort()) add(`trf-${id}`, "traffic_sensor", z, HEARTBEAT_S.traffic_sensor, true);
+  for (const [id, z] of [...mapped.entries()].sort().filter(([id]) => !healthy || healthy.has(id))) add(`trf-${id}`, "traffic_sensor", z, HEARTBEAT_S.traffic_sensor, true);
   for (const z of zones) {
     add(`col-${z.zone_id}`, "traffic_sensor", z.zone_id, HEARTBEAT_S.event_log);
     add(`cit-${z.zone_id}`, "citizen_report", z.zone_id, HEARTBEAT_S.event_log);

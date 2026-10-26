@@ -1,0 +1,79 @@
+split real, 37 episodes, 21 events, mode loeo
+
+policy            Brier LogLoss Cost/tick FalseAlarm  cascade ALERT+  meanP(S)  meanP(C) casc  maxP(C) casc
+engine            0.552   1.187      5.15       0.0%             0/9     0.178          0.058         0.101
+engine-frozen     0.740   1.529     10.97       0.0%             0/9     0.141          0.036         0.090
+count-threshold   0.428   0.941     14.52       0.0%             3/9     0.120          0.068         0.177
+always-watch      0.494   1.013     15.39       0.0%             0/9     0.150          0.100         0.100
+
+Per class (episodes in the class, independent events in brackets)
+  engine
+    cascade      9 episodes [ 3 events]  Brier 1.315  ALERT+ 0.0%  mean P(S) 0.207   <- fewer than 5 independent events: not statistically meaningful
+    noise       20 episodes [10 events]  Brier 0.283  ALERT+ 0.0%  mean P(S) 0.147
+    rain_only    4 episodes [ 4 events]  Brier 0.463  ALERT+ 0.0%  mean P(S) 0.278   <- fewer than 5 independent events: not statistically meaningful
+    rain_only+FFW   4 episodes [ 4 events]  Brier 0.266  ALERT+ 0.0%  mean P(S) 0.167   <- fewer than 5 independent events: not statistically meaningful
+  engine-frozen
+    cascade      9 episodes [ 3 events]  Brier 1.334  ALERT+ 0.0%  mean P(S) 0.153   <- fewer than 5 independent events: not statistically meaningful
+    noise       20 episodes [10 events]  Brier 0.511  ALERT+ 0.0%  mean P(S) 0.120
+    rain_only    4 episodes [ 4 events]  Brier 0.685  ALERT+ 0.0%  mean P(S) 0.237   <- fewer than 5 independent events: not statistically meaningful
+    rain_only+FFW   4 episodes [ 4 events]  Brier 0.605  ALERT+ 0.0%  mean P(S) 0.125   <- fewer than 5 independent events: not statistically meaningful
+  count-threshold
+    cascade      9 episodes [ 3 events]  Brier 1.376  ALERT+ 33.3%  mean P(S) 0.121   <- fewer than 5 independent events: not statistically meaningful
+    noise       20 episodes [10 events]  Brier 0.122  ALERT+ 0.0%  mean P(S) 0.120
+    rain_only    4 episodes [ 4 events]  Brier 0.122  ALERT+ 0.0%  mean P(S) 0.120   <- fewer than 5 independent events: not statistically meaningful
+    rain_only+FFW   4 episodes [ 4 events]  Brier 0.127  ALERT+ 0.0%  mean P(S) 0.120   <- fewer than 5 independent events: not statistically meaningful
+  always-watch
+    cascade      9 episodes [ 3 events]  Brier 1.175  ALERT+ 0.0%  mean P(S) 0.150   <- fewer than 5 independent events: not statistically meaningful
+    noise       20 episodes [10 events]  Brier 0.275  ALERT+ 0.0%  mean P(S) 0.150
+    rain_only    4 episodes [ 4 events]  Brier 0.275  ALERT+ 0.0%  mean P(S) 0.150   <- fewer than 5 independent events: not statistically meaningful
+    rain_only+FFW   4 episodes [ 4 events]  Brier 0.275  ALERT+ 0.0%  mean P(S) 0.150   <- fewer than 5 independent events: not statistically meaningful
+    SENSOR_FAILURE: 0 episodes, 0 events (empty class)
+    ISOLATED_INCIDENT: 0 episodes, 0 events (empty class)
+
+Per event, cascade events only (policy: Brier / max action / ALERT+ episodes / mean P(S) / max P(C))
+event                  engine                             engine-frozen                      count-threshold                    always-watch                      
+flood-2023             1.36 PREPARE  0/3 S0.08 C0.11      1.41 PREPARE  0/3 S0.05 C0.08      1.35 ALERT    1/3 S0.12 C0.35      1.17 WATCH    0/3 S0.15 C0.10     
+flood-2025-07-14       1.27 PREPARE  0/3 S0.36 C0.10      1.26 PREPARE  0/3 S0.29 C0.10      1.40 WATCH    0/3 S0.12 C0.06      1.17 WATCH    0/3 S0.15 C0.10     
+ida-2021               1.31 PREPARE  0/3 S0.17 C0.11      1.32 PREPARE  0/3 S0.12 C0.10      1.38 ALERT    2/3 S0.12 C0.35      1.17 WATCH    0/3 S0.15 C0.10     
+
+Cascade episodes, actions by episode minute (W/P/A/E start-end)
+  engine
+    real-flood-2023-on20           W1-1 P2-45   max P(C) 0.095
+    real-flood-2023-on30           W1-1 P2-45   max P(C) 0.107
+    real-flood-2023-on10           W1-1 P2-45   max P(C) 0.109
+    real-flood-2025-07-14-on10     W1-1 P2-31 W32-45   max P(C) 0.100
+    real-flood-2025-07-14-on20     W1-1 P2-41 W42-45   max P(C) 0.100
+    real-flood-2025-07-14-on30     W1-1 P2-44 W45-45   max P(C) 0.100
+    real-ida-2021-on20             W1-1 P2-23 W24-26 P27-45   max P(C) 0.100
+    real-ida-2021-on30             W1-1 P2-26 W27-32 P33-45   max P(C) 0.090
+    real-ida-2021-on10             W1-1 P2-45   max P(C) 0.105
+  engine-frozen
+    real-flood-2023-on20           W1-1 P2-11 W12-38 P39-45   max P(C) 0.068
+    real-flood-2023-on30           W1-1 P2-21 W22-45   max P(C) 0.075
+    real-flood-2023-on10           W1-1 P2-12 W13-23 P24-38 W39-45   max P(C) 0.081
+    real-flood-2025-07-14-on10     W1-1 P2-24 W25-45   max P(C) 0.100
+    real-flood-2025-07-14-on20     W1-1 P2-30 W31-45   max P(C) 0.100
+    real-flood-2025-07-14-on30     W1-1 P2-35 W36-45   max P(C) 0.100
+    real-ida-2021-on20             W1-1 P2-21 W22-45   max P(C) 0.100
+    real-ida-2021-on30             W1-1 P2-23 W24-45   max P(C) 0.085
+    real-ida-2021-on10             W1-1 P2-14 W15-40 P41-45   max P(C) 0.100
+  count-threshold
+    real-flood-2023-on20           W1-25 P26-26 W27-45   max P(C) 0.150
+    real-flood-2023-on30           W1-35 P36-36 W37-45   max P(C) 0.150
+    real-flood-2023-on10           W1-15 P16-16 W17-36 P37-40 A41-45   max P(C) 0.350
+    real-flood-2025-07-14-on10     W1-45   max P(C) 0.060
+    real-flood-2025-07-14-on20     W1-45   max P(C) 0.060
+    real-flood-2025-07-14-on30     W1-45   max P(C) 0.060
+    real-ida-2021-on20             W1-38 P39-39 A40-40 W41-42 P43-43 W44-45   max P(C) 0.350
+    real-ida-2021-on30             W1-45   max P(C) 0.060
+    real-ida-2021-on10             W1-28 P29-29 A30-30 P31-32 W33-45   max P(C) 0.350
+  always-watch
+    real-flood-2023-on20           W1-45   max P(C) 0.100
+    real-flood-2023-on30           W1-45   max P(C) 0.100
+    real-flood-2023-on10           W1-45   max P(C) 0.100
+    real-flood-2025-07-14-on10     W1-45   max P(C) 0.100
+    real-flood-2025-07-14-on20     W1-45   max P(C) 0.100
+    real-flood-2025-07-14-on30     W1-45   max P(C) 0.100
+    real-ida-2021-on20             W1-45   max P(C) 0.100
+    real-ida-2021-on30             W1-45   max P(C) 0.100
+    real-ida-2021-on10             W1-45   max P(C) 0.100

@@ -1,0 +1,38 @@
+
+Minutes from the first 5-minute rate >= 25 mm/h to the first rise of each stage
+event              tier       rain anchor (local)  311 flood+drainage  traffic slowdowns          EMS calls  hospital arrivals   peak ratio to normal (311/traffic/calls/hosp)
+ida-2021           cascade    2021-09-01 20:15                 -170                +70               +190            no rise   373.0 / 5.8 / 1.7 / 1.1
+flood-2023         cascade    2023-09-29 07:15                  -80                +65                +20            no rise   268.8 / 4.3 / 1.5 / 1.6
+flood-2025-07-14   cascade    2025-07-14 19:00                  +10                +55            no rise            no rise   45.0 / 3.4 / 1.2 / 1.2
+flood-2026-08-20   ambiguous  2026-08-20 17:55                  +15                +60            no rise            no rise   85.0 / 5.5 / 1.3 / 1.3
+flood-2020-08-12   ambiguous  2020-08-12 16:15                  -50            no rise            no rise            no rise   15.0 / 2.0 / 1.0 / 1.0
+flood-2022-09-13   ambiguous  2022-09-13 00:25                 +265                +65            no rise            no rise   46.0 / 3.3 / 1.6 / 1.3
+flood-2026-08-23   ambiguous  2026-08-23 06:35                  +25               -180               -180            no rise   62.0 / 4.5 / 1.8 / 1.4
+flood-2021-08-27   ambiguous  2021-08-27 16:55                  -40               +180            no rise            no rise   20.0 / 3.1 / 1.2 / 1.3
+flood-2025-10-30   ambiguous  2025-10-30 15:00                  -80                +15            no rise            no rise   232.1 / 3.9 / 1.2 / 1.1
+flood-2023-07-18   ambiguous  2023-07-18 13:15                  -30            no rise            no rise            no rise   25.0 / 2.2 / 1.4 / 1.3
+Summary over the events where the stage rose
+stage                engine config (min)  cascade tier: n/events, mean, sd   all events: n/events, mean, sd
+311 flood+drainage   2.8                  3/3, -80, 90                       10/10, -14, 114
+traffic slowdowns    4.7                  3/3, 63, 8                         8/10, 41, 101
+EMS calls            6.6                  2/3, 105, 120                      3/10, 10, 185
+hospital arrivals    9.1                  0/3, -, -                          0/10, -, -
+
+Minutes from the first 5-minute rate >= 50 mm/h to the first rise of each stage
+event              tier       rain anchor (local)  311 flood+drainage  traffic slowdowns          EMS calls  hospital arrivals   peak ratio to normal (311/traffic/calls/hosp)
+ida-2021           cascade    2021-09-01 21:20                 -235                 +5               +125            no rise   373.0 / 5.8 / 1.7 / 1.1
+flood-2023         cascade    2023-09-29 08:25                 -150                 -5                -50            no rise   268.8 / 4.3 / 1.5 / 1.6
+flood-2025-07-14   cascade    2025-07-14 19:10                   +0                +45            no rise            no rise   45.0 / 3.4 / 1.2 / 1.2
+flood-2026-08-20   ambiguous  2026-08-20 18:00                  +10                +55            no rise            no rise   85.0 / 5.5 / 1.3 / 1.3
+flood-2020-08-12   ambiguous  2020-08-12 16:15                  -50            no rise            no rise            no rise   15.0 / 2.0 / 1.0 / 1.0
+flood-2022-09-13   ambiguous  2022-09-13 00:30                 +260                +60            no rise            no rise   46.0 / 3.3 / 1.6 / 1.3
+flood-2026-08-23   ambiguous  2026-08-23 06:55                   +5               -200               -200            no rise   62.0 / 4.5 / 1.8 / 1.4
+flood-2021-08-27   ambiguous  2021-08-27 17:00                  -45               +175            no rise            no rise   20.0 / 3.1 / 1.2 / 1.3
+flood-2025-10-30   ambiguous  2025-10-30 15:00                  -80                +15            no rise            no rise   232.1 / 3.9 / 1.2 / 1.1
+flood-2023-07-18   ambiguous  2023-07-18 13:15                  -30            no rise            no rise            no rise   25.0 / 2.2 / 1.4 / 1.3
+Summary over the events where the stage rose
+stage                engine config (min)  cascade tier: n/events, mean, sd   all events: n/events, mean, sd
+311 flood+drainage   2.8                  3/3, -128, 119                     10/10, -32, 128
+traffic slowdowns    4.7                  3/3, 15, 26                        8/10, 19, 105
+EMS calls            6.6                  2/3, 38, 124                       3/10, -42, 163
+hospital arrivals    9.1                  0/3, -, -                          0/10, -, -

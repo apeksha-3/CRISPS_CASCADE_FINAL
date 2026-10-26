@@ -1,0 +1,37 @@
+split real, 37 episodes, 21 events, mode harness
+
+policy            Brier LogLoss Cost/tick FalseAlarm  cascade ALERT+  meanP(S)  meanP(C) casc  maxP(C) casc
+engine            0.580   1.265      7.28       0.0%             0/9     0.170          0.049         0.095
+engine-frozen     0.740   1.529     10.97       0.0%             0/9     0.141          0.036         0.090
+count-threshold   0.428   0.941     14.52       0.0%             3/9     0.120          0.068         0.177
+always-watch      0.494   1.013     15.39       0.0%             0/9     0.150          0.100         0.100
+
+Per class (episodes in the class, independent events in brackets)
+  engine
+    cascade      9 episodes [ 3 events]  Brier 1.315  ALERT+ 0.0%  mean P(S) 0.189   <- fewer than 5 independent events: not statistically meaningful
+    noise       20 episodes [10 events]  Brier 0.327  ALERT+ 0.0%  mean P(S) 0.143
+    rain_only    4 episodes [ 4 events]  Brier 0.485  ALERT+ 0.0%  mean P(S) 0.277   <- fewer than 5 independent events: not statistically meaningful
+    rain_only+FFW   4 episodes [ 4 events]  Brier 0.286  ALERT+ 0.0%  mean P(S) 0.156   <- fewer than 5 independent events: not statistically meaningful
+  engine-frozen
+    cascade      9 episodes [ 3 events]  Brier 1.334  ALERT+ 0.0%  mean P(S) 0.153   <- fewer than 5 independent events: not statistically meaningful
+    noise       20 episodes [10 events]  Brier 0.511  ALERT+ 0.0%  mean P(S) 0.120
+    rain_only    4 episodes [ 4 events]  Brier 0.685  ALERT+ 0.0%  mean P(S) 0.237   <- fewer than 5 independent events: not statistically meaningful
+    rain_only+FFW   4 episodes [ 4 events]  Brier 0.605  ALERT+ 0.0%  mean P(S) 0.125   <- fewer than 5 independent events: not statistically meaningful
+  count-threshold
+    cascade      9 episodes [ 3 events]  Brier 1.376  ALERT+ 33.3%  mean P(S) 0.121   <- fewer than 5 independent events: not statistically meaningful
+    noise       20 episodes [10 events]  Brier 0.122  ALERT+ 0.0%  mean P(S) 0.120
+    rain_only    4 episodes [ 4 events]  Brier 0.122  ALERT+ 0.0%  mean P(S) 0.120   <- fewer than 5 independent events: not statistically meaningful
+    rain_only+FFW   4 episodes [ 4 events]  Brier 0.127  ALERT+ 0.0%  mean P(S) 0.120   <- fewer than 5 independent events: not statistically meaningful
+  always-watch
+    cascade      9 episodes [ 3 events]  Brier 1.175  ALERT+ 0.0%  mean P(S) 0.150   <- fewer than 5 independent events: not statistically meaningful
+    noise       20 episodes [10 events]  Brier 0.275  ALERT+ 0.0%  mean P(S) 0.150
+    rain_only    4 episodes [ 4 events]  Brier 0.275  ALERT+ 0.0%  mean P(S) 0.150   <- fewer than 5 independent events: not statistically meaningful
+    rain_only+FFW   4 episodes [ 4 events]  Brier 0.275  ALERT+ 0.0%  mean P(S) 0.150   <- fewer than 5 independent events: not statistically meaningful
+    SENSOR_FAILURE: 0 episodes, 0 events (empty class)
+    ISOLATED_INCIDENT: 0 episodes, 0 events (empty class)
+
+Per event, cascade events only (policy: Brier / max action / ALERT+ episodes / mean P(S) / max P(C))
+event                  engine                             engine-frozen                      count-threshold                    always-watch                      
+flood-2023             1.36 PREPARE  0/3 S0.05 C0.11      1.41 PREPARE  0/3 S0.05 C0.08      1.35 ALERT    1/3 S0.12 C0.35      1.17 WATCH    0/3 S0.15 C0.10     
+flood-2025-07-14       1.27 PREPARE  0/3 S0.36 C0.10      1.26 PREPARE  0/3 S0.29 C0.10      1.40 WATCH    0/3 S0.12 C0.06      1.17 WATCH    0/3 S0.15 C0.10     
+ida-2021               1.31 PREPARE  0/3 S0.16 C0.11      1.32 PREPARE  0/3 S0.12 C0.10      1.38 ALERT    2/3 S0.12 C0.35      1.17 WATCH    0/3 S0.15 C0.10     

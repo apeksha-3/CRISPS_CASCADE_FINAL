@@ -26,6 +26,7 @@ export interface Controls {
 
 export interface Context {
   controls: Controls;
+  links: Record<string, string>[];
   zones: RealZone[];
   registry: RealRegistry;
   linkZone: Map<string, string>;
@@ -44,6 +45,7 @@ export function loadContext(): Context {
   const lz = linkZones(links, controls.zones);
   return {
     controls,
+    links,
     zones: controls.zones,
     registry: buildRegistry(controls.zones, links),
     linkZone: lz.mapped,
@@ -63,13 +65,13 @@ export function windowOf(ctx: Context, day: string, cascadeWindows: { id: string
 }
 
 // All observations in [fromMs, toMs) from one fetched window, through every adapter.
-export function observe(ctx: Context, windowId: string, fromMs: number, toMs: number, base: Baselines, unmapped: Unmapped): Obs[] {
+export function observe(ctx: Context, windowId: string, fromMs: number, toMs: number, base: Baselines, unmapped: Unmapped, healthy?: Set<string>): Obs[] {
   const fromIso = utcMsToLocalIso(fromMs);
   const toIso = utcMsToLocalIso(toMs);
   const inRange = (rows: Record<string, string>[], field: string) => rows.filter((r) => r[field] >= fromIso && r[field] < toIso);
   const obs: Obs[] = [];
   obs.push(...adapt311(inRange(loadJson("311", windowId), "created_date"), ctx.zones, fromMs, toMs, unmapped));
-  obs.push(...adaptDot(inRange(loadJson("dot-speeds", windowId), "data_as_of"), ctx.linkZone, ctx.gatewayOf, base, fromMs, toMs, unmapped));
+  obs.push(...adaptDot(inRange(loadJson("dot-speeds", windowId), "data_as_of"), ctx.linkZone, ctx.gatewayOf, base, fromMs, toMs, unmapped, healthy));
   obs.push(...adaptEms(loadJson("ems", windowId).filter((r) => r.incident_datetime < toIso), ctx.zones, base, fromMs, toMs, unmapped));
   obs.push(...adaptCollisions(loadJson("collisions", windowId).filter((r) => r.crash_date.slice(0, 10) >= fromIso.slice(0, 10) && r.crash_date.slice(0, 10) <= toIso.slice(0, 10)), ctx.zones, fromMs, toMs, unmapped));
   obs.push(...adaptRain(loadIem(windowId), ctx.stationZone, ctx.gatewayOf, fromMs, toMs, unmapped));

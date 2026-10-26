@@ -78,3 +78,9 @@ export const CASCADE_WINDOWS = [
   { id: "ida-2021", from: "2021-08-31", to: "2021-09-04" },
   { id: "flood-2023", from: "2023-09-27", to: "2023-10-01" },
 ];
+
+// ---- Phase 8: which DOT links are real sources ----
+// A link is registered only if, on at least LINK_HEALTH.day_share of the dry control days, it sent at
+// least LINK_HEALTH.min_valid valid reports (half of the ~288 a link sends in a full day). A link that
+// never reports on a normal day is not a source: registering it makes the engine see "silence" in every episode.
+export const LINK_HEALTH = { min_valid: 144, day_share: 0.7 };

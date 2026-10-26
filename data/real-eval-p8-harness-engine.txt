@@ -1,0 +1,58 @@
+Policy: engine   split: real   episodes: 37   ticks: 1665
+
+  Brier score (mean per episode, 0 best, 2 worst)  0.580
+  Log-loss (mean per episode)                      1.265
+  Cost per tick (mean of per-episode cost/ticks)   7.28
+  Total cost (raw sum over all ticks)              12116
+  Mean lead time vs critical time (min)            -   (0/9 cascades reached ALERT+)
+  False-alarm rate (benign episodes with ALERT+)   0.0%   (0/28)
+  Flip-flops                                       26 total, 0.70 per episode
+  Twin: pre-split overconfidence (0 = base rates)  -
+  Twin: time-to-commit after split (p>=0.6, min)  cascade - (never: 0), benign - (never: 0)
+  Fallback ticks                                   0
+  DEGRADED ticks                                   0   (0 episodes)
+  Forecast accuracy (cascades: real event in window) 0.0%   (38 distinct forecast lines; stricter "stage started in window": 0.0%)
+
+group                        n     truth  Brier LogLoss Cost/tick  ALERT+ Lead(min) Flips
+cascade                      9      CASC  1.315   3.149     27.31    0.0%         -    10
+lookalike:rain_only          8     NOISE  0.385   0.714      0.72    0.0%         -    10
+noise                       20     NOISE  0.327   0.638      0.89    0.0%         -     6
+
+ALERT+ = share of episodes where the policy ever reached ALERT or ESCALATE (a false alarm when truth is NOISE/SENS).
+
+Policy comparison, split real
+policy            Brier LogLoss Cost/tick FalseAlarm Lead(min) Flips Fallback Forecast
+always-watch      0.494   1.013     15.39       0.0%         -     0        0        -
+count-threshold   0.428   0.941     14.52       0.0%     57.00     9        0        -
+engine-handset    0.576   1.266      7.26       0.0%         -    31        0     0.0%
+engine            0.580   1.265      7.28       0.0%         -    26        0     0.0%
+
+engine vs count-threshold: Brier +0.152 (engine worse), false-alarm rate +0.0 pts (tie), cost/tick -7.24 (engine better)  -> engine wins 1/3
+engine-handset vs count-threshold: Brier +0.148 (engine-handset worse), false-alarm rate +0.0 pts (tie), cost/tick -7.25 (engine-handset better)  -> engine-handset wins 1/3
+engine vs engine-handset: Brier +0.004 (engine worse), false-alarm rate +0.0 pts (tie), cost/tick +0.01 (engine worse)  -> engine wins 0/3
+
+Trust panel (102 sources ever seen)
+top 5:
+  rain-nyc       rain_gauge       trust 0.986   Beta(34.3, 0.5)
+  rain-lga       rain_gauge       trust 0.986   Beta(34.3, 0.5)
+  hsp-mn10       hospital         trust 0.950   Beta(13.4, 0.7)
+  hsp-qn05       hospital         trust 0.946   Beta(9.4, 0.5)
+  hsp-mn12       hospital         trust 0.940   Beta(7.5, 0.5)
+bottom 5:
+  trf-4616252    traffic_sensor   trust 0.028   Beta(1.0, 35.1)
+  trf-4620298    traffic_sensor   trust 0.026   Beta(1.0, 38.4)
+  trf-4620332    traffic_sensor   trust 0.025   Beta(1.0, 39.7)
+  trf-4620331    traffic_sensor   trust 0.023   Beta(1.0, 43.4)
+  trf-4616260    traffic_sensor   trust 0.017   Beta(1.1, 64.8)
+mean trust by source type:
+  rain_gauge       0.943   (3 sources, min 0.857, max 0.986)
+  hospital         0.896   (9 sources, min 0.763, max 0.950)
+  dispatch         0.624   (8 sources, min 0.534, max 0.714)
+  citizen_report   0.323   (10 sources, min 0.045, max 0.753)
+  utility          0.271   (9 sources, min 0.110, max 0.400)
+  traffic_sensor   0.163   (63 sources, min 0.017, max 0.666)
+
+learned prior after all 37 episodes: N 0.550  S 0.150  I 0.200  C 0.100
+CUSUM alarms at episode(s): none
+
+saved data/eval-results.json

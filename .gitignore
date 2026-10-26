@@ -10,5 +10,6 @@ data/*
 !data/real/
 data/real/*
 !data/real/MANIFEST.md
+!data/real/MANIFEST-phase8.md
 # Offline demo recording (docs/demo-backup.md): too large for the repo
 docs/demo-recording.mp4

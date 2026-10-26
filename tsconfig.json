@@ -12,5 +12,5 @@
     "isolatedModules": true,
     "types": ["node"]
   },
-  "include": ["config", "sim", "engine", "eval", "server", "tests"]
+  "include": ["config", "sim", "engine", "eval", "server", "tests", "real", "scripts"]
 }

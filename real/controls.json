@@ -1,0 +1,177 @@
+{
+ "rain": [
+  "2022-07-18",
+  "2022-10-04",
+  "2022-12-23",
+  "2023-08-16",
+  "2023-09-11",
+  "2023-09-18",
+  "2023-11-22",
+  "2023-12-18"
+ ],
+ "dry": [
+  "2022-01-13",
+  "2022-02-16",
+  "2022-03-22",
+  "2022-04-28",
+  "2022-06-29",
+  "2022-07-12",
+  "2022-07-20",
+  "2022-09-21",
+  "2022-11-03",
+  "2022-12-14"
+ ],
+ "ffw": {
+  "2023-12-18": "5 OKX flash flood warning products",
+  "2023-11-22": "0 OKX flash flood warning products",
+  "2022-07-18": "6 OKX flash flood warning products",
+  "2022-10-04": "0 OKX flash flood warning products",
+  "2022-12-23": "1 OKX flash flood warning products",
+  "2023-09-11": "4 OKX flash flood warning products",
+  "2023-09-18": "0 OKX flash flood warning products",
+  "2023-08-16": "0 OKX flash flood warning products",
+  "2022-04-19": "0 OKX flash flood warning products",
+  "2023-12-28": "0 OKX flash flood warning products",
+  "2022-04-07": "0 OKX flash flood warning products",
+  "2023-08-07": "0 OKX flash flood warning products",
+  "2022-12-06": "0 OKX flash flood warning products"
+ },
+ "zones": [
+  {
+   "zone_id": "mn12",
+   "name": "12 MANHATTAN",
+   "lat": 40.851788018773654,
+   "lon": -73.93267689031957,
+   "volume": 2792,
+   "neighbours": [
+    "bx04",
+    "bx05",
+    "bx07",
+    "mn10"
+   ],
+   "gateway_id": "synth-gw1"
+  },
+  {
+   "zone_id": "bx04",
+   "name": "04 BRONX",
+   "lat": 40.83480936106067,
+   "lon": -73.92007289947567,
+   "volume": 2367,
+   "neighbours": [
+    "bx05",
+    "bx07",
+    "mn10",
+    "mn12"
+   ],
+   "gateway_id": "synth-gw1"
+  },
+  {
+   "zone_id": "bk01",
+   "name": "01 BROOKLYN",
+   "lat": 40.71679307982471,
+   "lon": -73.950652314869,
+   "volume": 2239,
+   "neighbours": [
+    "bk05",
+    "qn01",
+    "qn05"
+   ],
+   "gateway_id": "synth-gw3"
+  },
+  {
+   "zone_id": "qn05",
+   "name": "05 QUEENS",
+   "lat": 40.71164332431401,
+   "lon": -73.89421208003745,
+   "volume": 2089,
+   "neighbours": [
+    "bk01",
+    "bk05",
+    "qn01",
+    "qn12"
+   ],
+   "gateway_id": "synth-gw4"
+  },
+  {
+   "zone_id": "bx07",
+   "name": "07 BRONX",
+   "lat": 40.87017144972345,
+   "lon": -73.89036671807563,
+   "volume": 2040,
+   "neighbours": [
+    "bx04",
+    "bx05",
+    "mn12"
+   ],
+   "gateway_id": "synth-gw0"
+  },
+  {
+   "zone_id": "bk05",
+   "name": "05 BROOKLYN",
+   "lat": 40.67057952072485,
+   "lon": -73.88166176596064,
+   "volume": 2027,
+   "neighbours": [
+    "bk01",
+    "qn05",
+    "qn12"
+   ],
+   "gateway_id": "synth-gw5"
+  },
+  {
+   "zone_id": "qn12",
+   "name": "12 QUEENS",
+   "lat": 40.69368822047136,
+   "lon": -73.7830215694656,
+   "volume": 2017,
+   "neighbours": [
+    "bk05",
+    "qn01",
+    "qn05"
+   ],
+   "gateway_id": "synth-gw4"
+  },
+  {
+   "zone_id": "qn01",
+   "name": "01 QUEENS",
+   "lat": 40.76563798430456,
+   "lon": -73.92044479668124,
+   "volume": 1998,
+   "neighbours": [
+    "bk01",
+    "mn10",
+    "qn05",
+    "qn12"
+   ],
+   "gateway_id": "synth-gw3"
+  },
+  {
+   "zone_id": "bx05",
+   "name": "05 BRONX",
+   "lat": 40.852760530203575,
+   "lon": -73.90692112869642,
+   "volume": 1981,
+   "neighbours": [
+    "bx04",
+    "bx07",
+    "mn10",
+    "mn12"
+   ],
+   "gateway_id": "synth-gw0"
+  },
+  {
+   "zone_id": "mn10",
+   "name": "10 MANHATTAN",
+   "lat": 40.812220609406936,
+   "lon": -73.94614334601178,
+   "volume": 1965,
+   "neighbours": [
+    "bx04",
+    "bx05",
+    "mn12",
+    "qn01"
+   ],
+   "gateway_id": "synth-gw2"
+  }
+ ]
+}

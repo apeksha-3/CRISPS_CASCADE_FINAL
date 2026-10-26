@@ -5,5 +5,10 @@ dist/
 data/*
 # ...except the Phase 6 final eval captures, committed so judges can read exact numbers.
 !data/final-eval-*.txt
+# Phase 7: the manifest and the real-split eval captures are committed; the raw cache and built episodes are not
+!data/real-eval-*.txt
+!data/real/
+data/real/*
+!data/real/MANIFEST.md
 # Offline demo recording (docs/demo-backup.md): too large for the repo
 docs/demo-recording.mp4

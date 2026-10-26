@@ -1,0 +1,23 @@
+Policy: count-threshold   split: real   episodes: 34   ticks: 1530
+
+  Brier score (mean per episode, 0 best, 2 worst)  0.344
+  Log-loss (mean per episode)                      0.779
+  Cost per tick (mean of per-episode cost/ticks)   11.23
+  Total cost (raw sum over all ticks)              17177
+  Mean lead time vs critical time (min)            58.00   (2/6 cascades reached ALERT+)
+  False-alarm rate (benign episodes with ALERT+)   0.0%   (0/28)
+  Flip-flops                                       6 total, 0.18 per episode
+  Twin: pre-split overconfidence (0 = base rates)  -
+  Twin: time-to-commit after split (p>=0.6, min)  cascade - (never: 0), benign - (never: 0)
+  Fallback ticks                                   0
+  DEGRADED ticks                                   0   (0 episodes)
+  Forecast accuracy (cascades: real event in window) -   (0 distinct forecast lines; stricter "stage started in window": -)
+
+group                        n     truth  Brier LogLoss Cost/tick  ALERT+ Lead(min) Flips
+cascade                      6      CASC  1.368   2.737     63.59   50.0%     58.00     4
+lookalike:rain_only          8     NOISE  0.130   0.368      0.02    0.0%         -     2
+noise                       20     NOISE  0.122   0.357      0.00    0.0%         -     0
+
+ALERT+ = share of episodes where the policy ever reached ALERT or ESCALATE (a false alarm when truth is NOISE/SENS).
+
+saved data/eval-results.json
